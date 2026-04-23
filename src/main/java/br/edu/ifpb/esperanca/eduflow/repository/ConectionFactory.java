@@ -1,4 +1,4 @@
 package br.edu.ifpb.esperanca.eduflow.repository;
 
-public class UsuarioRepository {
+public class ConectionFactory {
 }
