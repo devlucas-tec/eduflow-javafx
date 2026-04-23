@@ -1,4 +1,4 @@
 package br.edu.ifpb.esperanca.eduflow.domain.entities;
 
-public class Administrador {
+public class Administrador extends Usuario{
 }
