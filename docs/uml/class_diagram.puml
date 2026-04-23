@@ -1,0 +1,89 @@
+@startuml
+
+abstract class Usuario {
+  - Long id
+  - String nome
+  - String email
+  - String senhaHash
+  - String matricula
+  # Role role
+  + void editarPerfil(dados)
+}
+
+class Aluno extends Usuario {
+}
+
+class Monitor extends Aluno {
+}
+
+class Professor extends Usuario {
+}
+
+class Administrador extends Usuario {
+}
+
+class Disciplina {
+  - Long id
+  - String nome
+  - String codigo
+  - String semestreLetivo
+}
+
+class Agenda {
+  - Long id
+  - LocalDateTime dataHoraInicio
+  - LocalDateTime dataHoraFim
+  - String local
+  - String link
+  - int vagasTotais
+  + int getVagasDisponiveis()
+}
+
+class Agendamento {
+  - Long id
+  - String assunto
+  - LocalDateTime dataHoraSolicitacao
+  - StatusAgendamento status
+  + boolean podeCancelar()
+  + void cancelar()
+}
+
+class Atendimento {
+  - Long id
+  - String conteudoTrabalhado
+  - boolean presenca
+  - LocalDateTime dataHoraRegistro
+}
+
+enum Role {
+  ALUNO
+  MONITOR
+  PROFESSOR
+  ADMINISTRADOR
+}
+
+enum StatusAgendamento {
+  PENDENTE
+  CONFIRMADO
+  CANCELADO_ALUNO
+  CANCELADO_MONITOR
+  REALIZADO
+  FALTOU
+  VALIDADO
+}
+
+
+' Relacionamentos
+Professor "1" -- "0..*" Disciplina : supervisiona
+Disciplina "1" -- "0..*" Monitor : vinculado a
+Monitor "1" -- "0..*" Agenda : cadastra
+Aluno "1" -- "0..*" Agendamento : realiza
+Agenda "1" -- "0..*" Agendamento : possui
+Agenda "1" -- "1" Disciplina : referente a
+Agendamento "1" -- "0..1" Atendimento : gera
+Atendimento "1" -- "1" Monitor : registra
+
+Usuario ..> Role
+Agendamento ..> StatusAgendamento
+
+@enduml
