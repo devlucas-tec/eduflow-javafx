@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-      xmlns="http://javafx.com/javafx/17"
-      fx:controller="br.edu.ifpb.esperanca.eduflow.controller.LoginController"
-      alignment="CENTER" spacing="10">
-
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifpb.esperanca.eduflow.controller.LoginController" style="-fx-background-color: #F0F4F8;">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label text="Tela de Login"/>
-
+    <Label text="Login - EduFlow" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2A4D69;"/>
+    
+    <VBox alignment="CENTER_LEFT" spacing="5.0" maxWidth="300">
+        <Label text="E-mail Institucional:" style="-fx-font-size: 14px; -fx-text-fill: #4A6D89;"/>
+        <TextField fx:id="txtEmail" promptText="seu.email@academico.ifpb.edu.br" style="-fx-font-size: 14px; -fx-background-radius: 5;"/>
+    </VBox>
+    
+    <VBox alignment="CENTER_LEFT" spacing="5.0" maxWidth="300">
+        <Label text="Senha:" style="-fx-font-size: 14px; -fx-text-fill: #4A6D89;"/>
+        <PasswordField fx:id="txtSenha" promptText="Sua senha" style="-fx-font-size: 14px; -fx-background-radius: 5;"/>
+    </VBox>
+    
+    <Button fx:id="btnLogin" onAction="#handleLogin" text="Entrar" defaultButton="true" style="-fx-background-color: #2A4D69; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 5;"/>
+    
+    <Text fx:id="errorMessage" fill="RED" visible="false"/>
 </VBox>

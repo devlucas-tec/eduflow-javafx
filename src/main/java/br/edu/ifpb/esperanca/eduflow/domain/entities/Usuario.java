@@ -2,7 +2,7 @@ package br.edu.ifpb.esperanca.eduflow.domain.entities;
 
 import br.edu.ifpb.esperanca.eduflow.domain.enums.Role;
 
-public abstract class Usuario {
+public class Usuario {
 
     private Long id;
     private String nome;
