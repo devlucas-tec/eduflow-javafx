@@ -1,4 +1,4 @@
 package br.edu.ifpb.esperanca.eduflow.controller;
 
-public class ProfessorDashboardController {
+public class AlunoDashBoardController {
 }
