@@ -1,7 +1,5 @@
 package br.edu.ifpb.esperanca.eduflow.repository;
 
-package br.edu.ifpb.esperanca.eduflow.repository;
-
 import br.edu.ifpb.esperanca.eduflow.domain.entities.Usuario;
 import br.edu.ifpb.esperanca.eduflow.domain.enums.Role;
 import org.mindrot.jbcrypt.BCrypt;
@@ -66,4 +64,3 @@ public class UsuarioRepository {
         return usuario;
     }
 }
-

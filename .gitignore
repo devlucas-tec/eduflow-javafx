@@ -1,0 +1,11 @@
+# Pasta de build
+target/
+
+# Variáveis sensíveis
+.env
+*.env
+database.properties
+
+# IDE
+.idea/
+*.iml

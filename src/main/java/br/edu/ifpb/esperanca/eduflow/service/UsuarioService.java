@@ -1,7 +1,5 @@
 package br.edu.ifpb.esperanca.eduflow.service;
 
-package br.edu.ifpb.esperanca.eduflow.service;
-
 import br.edu.ifpb.esperanca.eduflow.domain.entities.Usuario;
 import br.edu.ifpb.esperanca.eduflow.repository.UsuarioRepository;
 
