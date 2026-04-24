@@ -1,16 +1,14 @@
 package br.edu.ifpb.esperanca.eduflow.repository;
 
-import br.edu.ifpb.esperanca.eduflow.domain.entities.Usuario;
+import br.edu.ifpb.esperanca.eduflow.domain.entities.*;
 import br.edu.ifpb.esperanca.eduflow.domain.enums.Role;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Optional;
 
 public class UsuarioRepository {
+
     private final Connection conn;
 
     public UsuarioRepository() {
@@ -19,7 +17,7 @@ public class UsuarioRepository {
 
     public Usuario salvar(Usuario usuario) {
         String sql = "INSERT INTO usuarios (nome, email, senha_hash, matricula, role) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, usuario.getNome());
             stmt.setString(2, usuario.getEmail());
             stmt.setString(3, BCrypt.hashpw(usuario.getSenhaHash(), BCrypt.gensalt()));
@@ -28,9 +26,7 @@ public class UsuarioRepository {
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                usuario.setId(rs.getLong(1));
-            }
+            if (rs.next()) usuario.setId(rs.getLong(1));
             return usuario;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar usuário", e);
@@ -42,9 +38,8 @@ public class UsuarioRepository {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next() && BCrypt.checkpw(senha, rs.getString("senha_hash"))) {
-                return Optional.of(extractUsuarioFromResultSet(rs));
+                return Optional.of(mapearUsuario(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao autenticar usuário", e);
@@ -52,15 +47,44 @@ public class UsuarioRepository {
         return Optional.empty();
     }
 
+    public Optional<Usuario> buscarPorId(Long id) {
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return Optional.of(mapearUsuario(rs));
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar usuário", e);
+        }
+        return Optional.empty();
+    }
 
-    private Usuario extractUsuarioFromResultSet(ResultSet rs) throws SQLException {
-        Usuario usuario = new Usuario();
-        usuario.setId(rs.getLong("id"));
-        usuario.setNome(rs.getString("nome"));
-        usuario.setEmail(rs.getString("email"));
-        usuario.setSenhaHash(rs.getString("senha_hash"));
-        usuario.setMatricula(rs.getString("matricula"));
-        usuario.setRole(Role.valueOf(rs.getString("role")));
-        return usuario;
+    public void atualizar(Usuario usuario) {
+        String sql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, usuario.getNome());
+            stmt.setString(2, usuario.getEmail());
+            stmt.setLong(3, usuario.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar usuário", e);
+        }
+    }
+
+    /** Mapeia o ResultSet para a subclasse correta conforme o Role. */
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        Role role = Role.valueOf(rs.getString("role"));
+        Long id = rs.getLong("id");
+        String nome = rs.getString("nome");
+        String email = rs.getString("email");
+        String senhaHash = rs.getString("senha_hash");
+        String matricula = rs.getString("matricula");
+
+        return switch (role) {
+            case ALUNO         -> new Aluno(id, nome, email, senhaHash, matricula);
+            case MONITOR       -> new Monitor(id, nome, email, senhaHash, matricula);
+            case PROFESSOR     -> new Professor(id, nome, email, senhaHash, matricula);
+            case ADMINISTRADOR -> new Administrador(id, nome, email, senhaHash, matricula);
+        };
     }
 }

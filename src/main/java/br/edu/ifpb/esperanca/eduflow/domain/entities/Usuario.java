@@ -2,7 +2,7 @@ package br.edu.ifpb.esperanca.eduflow.domain.entities;
 
 import br.edu.ifpb.esperanca.eduflow.domain.enums.Role;
 
-public class Usuario {
+public abstract class Usuario {
 
     private Long id;
     private String nome;
@@ -20,58 +20,24 @@ public class Usuario {
         this.role = role;
     }
 
-    public Usuario() {
+    public Usuario() {}
+
+    /** Edita nome e e-mail. Matrícula não pode ser alterada (F1.2). */
+    public void editarPerfil(String novoNome, String novoEmail) {
+        if (novoNome  != null && !novoNome.isBlank())  setNome(novoNome);
+        if (novoEmail != null && !novoEmail.isBlank()) setEmail(novoEmail);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenhaHash() {
-        return senhaHash;
-    }
-
-    public void setSenhaHash(String senhaHash) {
-        this.senhaHash = senhaHash;
-    }
-
-    public String getMatricula() {
-        return matricula;
-    }
-
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public void editarPerfil() {
-
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getSenhaHash() { return senhaHash; }
+    public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }
+    public String getMatricula() { return matricula; }
+    public void setMatricula(String matricula) { this.matricula = matricula; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 }

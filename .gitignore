@@ -4,7 +4,6 @@ target/
 # Variáveis sensíveis
 .env
 *.env
-database.properties
 
 # IDE
 .idea/
