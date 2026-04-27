@@ -2,7 +2,7 @@
 target/
 
 # Variáveis sensíveis
-.env
+src/main/resources/.env
 *.env
 
 # IDE
