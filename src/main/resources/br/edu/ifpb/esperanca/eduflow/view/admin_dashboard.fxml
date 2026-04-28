@@ -82,6 +82,26 @@
                                 style="-fx-background-color: #E67E22; -fx-text-fill: white; -fx-background-radius: 5;"/>
                     </HBox>
 
+                    <!-- Vínculo Professor ↔ Disciplina -->
+                    <Label text="Vínculo Professor ↔ Disciplina:" style="-fx-font-weight: bold; -fx-padding: 8 0 0 0;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Disciplina:"/>
+                        <ComboBox fx:id="comboDisciplinaVinculo" prefWidth="220"/>
+                        <Button text="Vincular" onAction="#handleVincularDisciplina"
+                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Desvincular" onAction="#handleDesvincularDisciplina"
+                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Ver Disciplinas do Professor" onAction="#handleVerDisciplinasProfessor"
+                                style="-fx-background-color: #2980B9; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </HBox>
+                    <TableView fx:id="tabelaDisciplinasProfessor" prefHeight="130">
+                        <columns>
+                            <TableColumn fx:id="colDPNome" text="Disciplina" prefWidth="250"/>
+                            <TableColumn fx:id="colDPCodigo" text="Código" prefWidth="120"/>
+                            <TableColumn fx:id="colDPSemestre" text="Semestre" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+
                     <Text fx:id="errorUsuario" fill="RED" visible="false"/>
                     <Text fx:id="successUsuario" fill="GREEN" visible="false"/>
                 </VBox>
