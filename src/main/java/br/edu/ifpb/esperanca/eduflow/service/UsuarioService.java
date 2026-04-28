@@ -54,6 +54,10 @@ public class UsuarioService {
         usuarioRepository.alterarRole(usuario.getId(), novoRole);
     }
 
+    public List<Usuario> listarProfessores() {
+        return usuarioRepository.listarProfessores();
+    }
+
     public void alterarStatus(Usuario usuario, boolean ativo) {
         usuarioRepository.alterarStatus(usuario.getId(), ativo);
     }
