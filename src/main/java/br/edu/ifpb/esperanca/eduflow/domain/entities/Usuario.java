@@ -10,6 +10,7 @@ public abstract class Usuario {
     private String senhaHash;
     private String matricula;
     protected Role role;
+    private boolean ativo = true;
 
     public Usuario(Long id, String nome, String email, String senhaHash, String matricula, Role role) {
         this.id = id;
@@ -18,6 +19,7 @@ public abstract class Usuario {
         this.senhaHash = senhaHash;
         this.matricula = matricula;
         this.role = role;
+        this.ativo = true;
     }
 
     public Usuario() {}
@@ -40,4 +42,6 @@ public abstract class Usuario {
     public void setMatricula(String matricula) { this.matricula = matricula; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+    public boolean isAtivo() { return ativo; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
 }
