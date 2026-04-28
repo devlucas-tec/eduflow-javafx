@@ -16,20 +16,42 @@
         </HBox>
     </top>
     <center>
-        <VBox spacing="10" style="-fx-padding: 20;">
-            <Label text="Painel de Validação — Atendimentos para Aprovar (RN02/RN09)"
-                   style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-            <TableView fx:id="tabelaParaValidar" prefHeight="350" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colAluno" text="Aluno" prefWidth="200"/>
-                    <TableColumn fx:id="colAssunto" text="Assunto" prefWidth="300"/>
-                    <TableColumn fx:id="colStatus" text="Status" prefWidth="150"/>
-                </columns>
-            </TableView>
-            <Button text="Validar Atendimento Selecionado" onAction="#handleValidar"
-                    style="-fx-background-color: #6C3483; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
-            <Text fx:id="errorMessage" fill="RED" visible="false"/>
-            <Text fx:id="successMessage" fill="GREEN" visible="false"/>
-        </VBox>
+        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
+
+            <!-- ABA 1: Minhas Disciplinas -->
+            <Tab text="Minhas Disciplinas">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <Label text="Disciplinas Vinculadas" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                    <TableView fx:id="tabelaDisciplinas" VBox.vgrow="ALWAYS" prefHeight="350">
+                        <columns>
+                            <TableColumn fx:id="colDisciplinaNome" text="Nome" prefWidth="280"/>
+                            <TableColumn fx:id="colDisciplinaCodigo" text="Código" prefWidth="130"/>
+                            <TableColumn fx:id="colDisciplinaSemestre" text="Semestre" prefWidth="130"/>
+                        </columns>
+                    </TableView>
+                    <Text fx:id="msgDisciplinas" fill="GRAY" visible="false"/>
+                </VBox>
+            </Tab>
+
+            <!-- ABA 2: Validação de Atendimentos -->
+            <Tab text="Validação de Atendimentos">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <Label text="Atendimentos para Aprovar (RN02/RN09)"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                    <TableView fx:id="tabelaParaValidar" prefHeight="350" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colAluno" text="Aluno" prefWidth="200"/>
+                            <TableColumn fx:id="colAssunto" text="Assunto" prefWidth="300"/>
+                            <TableColumn fx:id="colStatus" text="Status" prefWidth="150"/>
+                        </columns>
+                    </TableView>
+                    <Button text="Validar Atendimento Selecionado" onAction="#handleValidar"
+                            style="-fx-background-color: #6C3483; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                    <Text fx:id="errorMessage" fill="RED" visible="false"/>
+                    <Text fx:id="successMessage" fill="GREEN" visible="false"/>
+                </VBox>
+            </Tab>
+
+        </TabPane>
     </center>
 </BorderPane>
