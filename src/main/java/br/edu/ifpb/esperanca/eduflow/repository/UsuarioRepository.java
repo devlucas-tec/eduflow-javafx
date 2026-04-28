@@ -118,6 +118,18 @@ public class UsuarioRepository {
         return Optional.empty();
     }
 
+    public List<Usuario> listarProfessores() {
+        String sql = "SELECT * FROM usuarios WHERE role = 'PROFESSOR' AND ativo = TRUE ORDER BY nome";
+        List<Usuario> lista = new ArrayList<>();
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) lista.add(mapearUsuario(rs));
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar professores: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
     public void atualizar(Usuario usuario) {
         String sql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
         try (PreparedStatement stmt = conn().prepareStatement(sql)) {
