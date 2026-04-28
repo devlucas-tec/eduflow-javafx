@@ -11,6 +11,11 @@ import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import br.edu.ifpb.esperanca.eduflow.domain.entities.Aula;
+import br.edu.ifpb.esperanca.eduflow.service.AulaService;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class AdminDashBoardController {
@@ -42,6 +47,26 @@ public class AdminDashBoardController {
     @FXML private Text errorUsuario;
     @FXML private Text successUsuario;
 
+    // --- Aba Calendários ---
+    @FXML private ComboBox<Usuario> comboProfessor;
+    @FXML private TableView<Aula> tabelaAulas;
+    @FXML private TableColumn<Aula, String> colAulaProfessor;
+    @FXML private TableColumn<Aula, String> colAulaData;
+    @FXML private TableColumn<Aula, String> colAulaDisciplina;
+    @FXML private TableColumn<Aula, String> colAulaTipo;
+    @FXML private TableColumn<Aula, String> colAulaJustificativa;
+    @FXML private TextField txtAulaData;
+    @FXML private ComboBox<String> comboTipoAula;
+    @FXML private ComboBox<Disciplina> comboDisciplinaAula;
+    @FXML private TextField txtJustificativa;
+    @FXML private Text errorCalendario;
+    @FXML private Text successCalendario;
+
+    @FXML private TabPane tabPane;
+
+    private final AulaService aulaService = new AulaService();
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     private final DisciplinaService disciplinaService = new DisciplinaService();
     private final UsuarioService usuarioService = new UsuarioService();
 
@@ -57,6 +82,10 @@ public class AdminDashBoardController {
         configurarFiltros();
         carregarUsuarios();
 
+        configurarTabelaAulas();
+        configurarFormularioAula();
+        handleVerTodasAulas();
+
         // Atualiza o botão quando selecionar um usuário
         tabelaUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
@@ -64,6 +93,14 @@ public class AdminDashBoardController {
                 btnToggleStatus.setStyle(selected.isAtivo()
                         ? "-fx-background-color: #E67E22; -fx-text-fill: white; -fx-background-radius: 5;"
                         : "-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;");
+            }
+        });
+
+        // Recarrega disciplinas do combo do calendário ao trocar de aba
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            if (newIndex.intValue() == 2) { // índice 2 = aba Calendários
+                List<Disciplina> disciplinas = disciplinaService.listarTodas();
+                comboDisciplinaAula.setItems(FXCollections.observableArrayList(disciplinas));
             }
         });
     }
@@ -185,6 +222,151 @@ public class AdminDashBoardController {
         handleFiltrarUsuarios();
     }
 
+    // ===================== CALENDÁRIOS =====================
+
+    private void configurarTabelaAulas() {
+        colAulaProfessor.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().getProfessorNome() != null
+                        ? c.getValue().getProfessorNome() : "—"));
+        colAulaData.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().getDataHora() != null
+                        ? c.getValue().getDataHora().format(FMT) : "—"));
+        colAulaDisciplina.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().getDisciplinaNome() != null
+                        ? c.getValue().getDisciplinaNome() : "—"));
+        colAulaTipo.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().getTipo()));
+        colAulaJustificativa.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().getJustificativa() != null
+                        ? c.getValue().getJustificativa() : ""));
+
+        // Ao selecionar uma aula, preenche o formulário para edição
+        tabelaAulas.getSelectionModel().selectedItemProperty().addListener((obs, old, aula) -> {
+            if (aula != null) {
+                txtAulaData.setText(aula.getDataHora().format(FMT));
+                comboTipoAula.setValue(aula.getTipo());
+                txtJustificativa.setText(aula.getJustificativa() != null ? aula.getJustificativa() : "");
+                // Seleciona a disciplina correspondente no combo
+                comboDisciplinaAula.getItems().stream()
+                        .filter(d -> d.getId().equals(aula.getDisciplinaId()))
+                        .findFirst()
+                        .ifPresent(comboDisciplinaAula::setValue);
+            }
+        });
+    }
+
+    private void configurarFormularioAula() {
+        comboTipoAula.setItems(FXCollections.observableArrayList("REGULAR", "REPOSICAO", "EXTRA"));
+        comboTipoAula.setValue("REGULAR");
+
+        // Carrega professores no combo
+        List<Usuario> professores = usuarioService.listarProfessores();
+        comboProfessor.setItems(FXCollections.observableArrayList(professores));
+        comboProfessor.setConverter(new javafx.util.StringConverter<>() {
+            public String toString(Usuario u) { return u != null ? u.getNome() : ""; }
+            public Usuario fromString(String s) { return null; }
+        });
+
+        // Carrega disciplinas no combo do formulário
+        List<Disciplina> disciplinas = disciplinaService.listarTodas();
+        comboDisciplinaAula.setItems(FXCollections.observableArrayList(disciplinas));
+        comboDisciplinaAula.setConverter(new javafx.util.StringConverter<>() {
+            public String toString(Disciplina d) { return d != null ? d.getNome() : ""; }
+            public Disciplina fromString(String s) { return null; }
+        });
+    }
+
+    @FXML
+    public void handleCarregarCalendario() {
+        Usuario professor = comboProfessor.getValue();
+        if (professor == null) { showErrorCalendario("Selecione um professor."); return; }
+        List<Aula> aulas = aulaService.listarPorProfessor(professor.getId());
+        // Preenche o nome do professor em cada aula para exibição
+        aulas.forEach(a -> a.setProfessorNome(professor.getNome()));
+        tabelaAulas.setItems(FXCollections.observableArrayList(aulas));
+        showSuccessCalendario(aulas.size() + " aula(s) encontrada(s).");
+    }
+
+    @FXML
+    public void handleVerTodasAulas() {
+        List<Aula> aulas = aulaService.listarTodas();
+        tabelaAulas.setItems(FXCollections.observableArrayList(aulas));
+    }
+
+    @FXML
+    public void handleAdicionarAula() {
+        try {
+            Aula aula = coletarFormulario(null);
+            aulaService.cadastrar(aula);
+            showSuccessCalendario("Aula adicionada com sucesso.");
+            handleVerTodasAulas();
+            limparFormularioAula();
+        } catch (Exception e) {
+            showErrorCalendario(e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleEditarAula() {
+        Aula selecionada = tabelaAulas.getSelectionModel().getSelectedItem();
+        if (selecionada == null) { showErrorCalendario("Selecione uma aula para editar."); return; }
+        try {
+            Aula aula = coletarFormulario(selecionada.getId());
+            aulaService.editar(aula);
+            showSuccessCalendario("Aula atualizada com sucesso.");
+            handleVerTodasAulas();
+            limparFormularioAula();
+        } catch (Exception e) {
+            showErrorCalendario(e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleRemoverAula() {
+        Aula selecionada = tabelaAulas.getSelectionModel().getSelectedItem();
+        if (selecionada == null) { showErrorCalendario("Selecione uma aula para remover."); return; }
+        aulaService.excluir(selecionada.getId());
+        showSuccessCalendario("Aula removida.");
+        handleVerTodasAulas();
+        limparFormularioAula();
+    }
+
+    @FXML
+    public void handleLimparSelecaoAula() {
+        tabelaAulas.getSelectionModel().clearSelection();
+        limparFormularioAula();
+    }
+
+    private Aula coletarFormulario(Long id) {
+        String dataStr = txtAulaData.getText().trim();
+        String tipo = comboTipoAula.getValue();
+        Disciplina disciplina = comboDisciplinaAula.getValue();
+        Usuario professor = comboProfessor.getValue();
+        String justificativa = txtJustificativa.getText().trim();
+
+        if (dataStr.isEmpty()) throw new RuntimeException("Informe a data e hora da aula.");
+        if (professor == null) throw new RuntimeException("Selecione o professor.");
+        if (disciplina == null) throw new RuntimeException("Selecione a disciplina.");
+
+        LocalDateTime dataHora;
+        try {
+            dataHora = LocalDateTime.parse(dataStr, FMT);
+        } catch (DateTimeParseException e) {
+            throw new RuntimeException("Data inválida. Use o formato dd/MM/yyyy HH:mm.");
+        }
+
+        Aula aula = new Aula(id, dataHora, tipo, justificativa.isEmpty() ? null : justificativa,
+                professor.getId(), disciplina.getId());
+        return aula;
+    }
+
+    private void limparFormularioAula() {
+        txtAulaData.clear();
+        txtJustificativa.clear();
+        comboTipoAula.setValue("REGULAR");
+        comboDisciplinaAula.setValue(null);
+    }
+
     // ===================== LOGOUT =====================
 
     @FXML
@@ -209,4 +391,13 @@ public class AdminDashBoardController {
         if (successUsuario != null) { successUsuario.setText(msg); successUsuario.setVisible(true); }
         if (errorUsuario != null) errorUsuario.setVisible(false);
     }
+    private void showErrorCalendario(String msg) {
+        if (errorCalendario != null) { errorCalendario.setText(msg); errorCalendario.setVisible(true); }
+        if (successCalendario != null) successCalendario.setVisible(false);
+    }
+    private void showSuccessCalendario(String msg) {
+        if (successCalendario != null) { successCalendario.setText(msg); successCalendario.setVisible(true); }
+        if (errorCalendario != null) errorCalendario.setVisible(false);
+    }
 }
+

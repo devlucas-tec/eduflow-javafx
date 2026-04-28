@@ -16,7 +16,7 @@
         </HBox>
     </top>
     <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
 
             <!-- ABA 1: Disciplinas -->
             <Tab text="Disciplinas">
@@ -84,6 +84,56 @@
 
                     <Text fx:id="errorUsuario" fill="RED" visible="false"/>
                     <Text fx:id="successUsuario" fill="GREEN" visible="false"/>
+                </VBox>
+            </Tab>
+
+            <!-- ABA 3: Calendários de Professores -->
+            <Tab text="Calendários">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <Label text="Calendários de Aula dos Professores" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                    <!-- Seleção de professor -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Professor:"/>
+                        <ComboBox fx:id="comboProfessor" prefWidth="220"/>
+                        <Button text="Ver Calendário" onAction="#handleCarregarCalendario"
+                                style="-fx-background-color: #2980B9; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Ver Todos" onAction="#handleVerTodasAulas"
+                                style="-fx-background-color: #7F8C8D; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </HBox>
+
+                    <!-- Tabela de aulas -->
+                    <TableView fx:id="tabelaAulas" VBox.vgrow="ALWAYS" prefHeight="250">
+                        <columns>
+                            <TableColumn fx:id="colAulaProfessor" text="Professor" prefWidth="150"/>
+                            <TableColumn fx:id="colAulaData" text="Data/Hora" prefWidth="150"/>
+                            <TableColumn fx:id="colAulaDisciplina" text="Disciplina" prefWidth="160"/>
+                            <TableColumn fx:id="colAulaTipo" text="Tipo" prefWidth="90"/>
+                            <TableColumn fx:id="colAulaJustificativa" text="Justificativa" prefWidth="220"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Formulário para adicionar/editar aula -->
+                    <Label text="Adicionar / Editar Aula:" style="-fx-font-weight: bold;"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtAulaData" promptText="Data (dd/MM/yyyy HH:mm)" prefWidth="175"/>
+                        <ComboBox fx:id="comboTipoAula" prefWidth="120"/>
+                        <ComboBox fx:id="comboDisciplinaAula" prefWidth="180"/>
+                        <TextField fx:id="txtJustificativa" promptText="Justificativa (opcional)" prefWidth="200"/>
+                    </HBox>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Button text="Adicionar Aula" onAction="#handleAdicionarAula"
+                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Editar Selecionada" onAction="#handleEditarAula"
+                                style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Remover Selecionada" onAction="#handleRemoverAula"
+                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Limpar Seleção" onAction="#handleLimparSelecaoAula"
+                                style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </HBox>
+
+                    <Text fx:id="errorCalendario" fill="RED" visible="false"/>
+                    <Text fx:id="successCalendario" fill="GREEN" visible="false"/>
                 </VBox>
             </Tab>
 
