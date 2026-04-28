@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.edu.ifpb.esperanca.eduflow.controller.AlunoDashBoardController"
+            style="-fx-background-color: #F0F4F8;">
+
+    <!-- Topo -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2A4D69; -fx-padding: 15;">
+            <Label fx:id="lblBemVindo" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="Sair" onAction="#handleLogout"
+                    style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        </HBox>
+    </top>
+
+    <!-- Centro -->
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
+
+            <!-- Aba 1: Agendar -->
+            <Tab text="Agendar Monitoria">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <Label text="Horários disponíveis:" style="-fx-font-weight: bold;"/>
+                    <TableView fx:id="tabelaAgendas" prefHeight="250">
+                        <columns>
+                            <TableColumn fx:id="colDisciplina" text="Disciplina" prefWidth="180"/>
+                            <TableColumn fx:id="colHorario" text="Horário" prefWidth="280"/>
+                            <TableColumn fx:id="colLocal" text="Local / Link" prefWidth="200"/>
+                            <TableColumn fx:id="colVagas" text="Vagas" prefWidth="80"/>
+                        </columns>
+                    </TableView>
+                    <Label text="Assunto / Dúvida:" style="-fx-font-weight: bold;"/>
+                    <TextArea fx:id="txtAssunto" promptText="Descreva sua dúvida..." prefHeight="80"/>
+                    <Button text="Confirmar Agendamento" onAction="#handleAgendar"
+                            style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    <Text fx:id="errorMessage" fill="RED" visible="false"/>
+                    <Text fx:id="successMessage" fill="GREEN" visible="false"/>
+                </VBox>
+            </Tab>
+
+            <!-- Aba 2: Meus Agendamentos -->
+            <Tab text="Meus Agendamentos">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <TableView fx:id="tabelaMeusAgendamentos" prefHeight="300">
+                        <columns>
+                            <TableColumn fx:id="colMeuStatus" text="Status" prefWidth="150"/>
+                            <TableColumn fx:id="colMeuAssunto" text="Assunto" prefWidth="300"/>
+                            <TableColumn fx:id="colMeuHorario" text="Horário" prefWidth="200"/>
+                        </columns>
+                    </TableView>
+                    <Button text="Cancelar Agendamento Selecionado" onAction="#handleCancelarAgendamento"
+                            style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                </VBox>
+            </Tab>
+
+        </TabPane>
+    </center>
+</BorderPane>
