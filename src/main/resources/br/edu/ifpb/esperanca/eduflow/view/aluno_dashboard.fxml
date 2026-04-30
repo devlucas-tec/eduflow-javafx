@@ -22,7 +22,41 @@
     <center>
         <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
 
-            <!-- Aba 1: Agendar -->
+            <!-- Aba 1: Minhas Disciplinas -->
+            <Tab text="Minhas Disciplinas">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <Label text="Minhas Disciplinas" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                    <!-- Disciplinas matriculadas -->
+                    <Label text="Matriculado em:" style="-fx-font-weight: bold; -fx-text-fill: #27AE60;"/>
+                    <TableView fx:id="tabelaMatriculadas" prefHeight="180" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colMatNome" text="Disciplina" prefWidth="260"/>
+                            <TableColumn fx:id="colMatCodigo" text="Código" prefWidth="120"/>
+                            <TableColumn fx:id="colMatSemestre" text="Semestre" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+                    <Button text="Cancelar Matrícula Selecionada" onAction="#handleCancelarMatricula"
+                            style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+
+                    <!-- Disciplinas disponíveis -->
+                    <Label text="Disciplinas disponíveis:" style="-fx-font-weight: bold; -fx-text-fill: #2980B9;"/>
+                    <TableView fx:id="tabelaDisponiveis" prefHeight="180" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colDispNome" text="Disciplina" prefWidth="260"/>
+                            <TableColumn fx:id="colDispCodigo" text="Código" prefWidth="120"/>
+                            <TableColumn fx:id="colDispSemestre" text="Semestre" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+                    <Button text="Matricular na Disciplina Selecionada" onAction="#handleMatricular"
+                            style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
+
+                    <Text fx:id="errorDisciplina" fill="RED" visible="false"/>
+                    <Text fx:id="successDisciplina" fill="GREEN" visible="false"/>
+                </VBox>
+            </Tab>
+
+            <!-- Aba 2: Agendar -->
             <Tab text="Agendar Monitoria">
                 <VBox spacing="10" style="-fx-padding: 15;">
                     <Label text="Horários disponíveis:" style="-fx-font-weight: bold;"/>
@@ -43,7 +77,7 @@
                 </VBox>
             </Tab>
 
-            <!-- Aba 2: Meus Agendamentos -->
+            <!-- Aba 3: Meus Agendamentos -->
             <Tab text="Meus Agendamentos">
                 <VBox spacing="10" style="-fx-padding: 15;">
                     <TableView fx:id="tabelaMeusAgendamentos" prefHeight="300">
