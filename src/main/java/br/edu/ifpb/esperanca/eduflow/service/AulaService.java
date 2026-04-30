@@ -29,6 +29,28 @@ public class AulaService {
         return aulaRepository.listarPorProfessor(professorId);
     }
 
+    /**
+     * Retorna um resumo de carga horária para uma disciplina do professor.
+     * Cada aula = 1h (simplificação acadêmica).
+     */
+    public String resumoCargaHoraria(Long professorId, Long disciplinaId) {
+        int regular  = aulaRepository.contarPorProfessorETipo(professorId, disciplinaId, "REGULAR");
+        int reposicao = aulaRepository.contarPorProfessorETipo(professorId, disciplinaId, "REPOSICAO");
+        int extra    = aulaRepository.contarPorProfessorETipo(professorId, disciplinaId, "EXTRA");
+        int total    = regular + reposicao + extra;
+        return String.format("Total: %dh  |  Regulares: %dh  |  Reposições: %dh  |  Extras: %dh",
+                total, regular, reposicao, extra);
+    }
+
+    public List<Aula> listarPorProfessorEDisciplina(Long professorId, Long disciplinaId) {
+        return aulaRepository.listarPorProfessorEDisciplina(professorId, disciplinaId);
+    }
+
+    /** Retorna int[]{total, cumpridas} para exibição de carga horária. */
+    public int[] calcularCargaHoraria(Long professorId, Long disciplinaId) {
+        return aulaRepository.contarCargaHoraria(professorId, disciplinaId);
+    }
+
     public List<Aula> listarTodas() {
         return aulaRepository.listarTodas();
     }

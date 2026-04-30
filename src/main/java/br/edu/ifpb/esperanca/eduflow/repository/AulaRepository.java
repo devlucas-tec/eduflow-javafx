@@ -59,6 +59,47 @@ public class AulaRepository {
         }
     }
 
+    /** Lista aulas de um professor filtradas por disciplina. */
+    public List<Aula> listarPorProfessorEDisciplina(Long professorId, Long disciplinaId) {
+        String sql = """
+            SELECT a.*, d.nome AS disciplina_nome
+            FROM aulas a
+            JOIN disciplinas d ON d.id = a.disciplina_id
+            WHERE a.professor_id = ? AND a.disciplina_id = ?
+            ORDER BY a.data_hora
+            """;
+        List<Aula> lista = new ArrayList<>();
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, professorId);
+            stmt.setLong(2, disciplinaId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) lista.add(mapear(rs));
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar aulas: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
+    /** Conta total de aulas e aulas cumpridas (passadas) por professor e disciplina. */
+    public int[] contarCargaHoraria(Long professorId, Long disciplinaId) {
+        String sql = """
+            SELECT
+                COUNT(*) AS total,
+                COUNT(CASE WHEN data_hora <= NOW() THEN 1 END) AS cumpridas
+            FROM aulas
+            WHERE professor_id = ? AND disciplina_id = ?
+            """;
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, professorId);
+            stmt.setLong(2, disciplinaId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return new int[]{ rs.getInt("total"), rs.getInt("cumpridas") };
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao calcular carga horária: " + e.getMessage(), e);
+        }
+        return new int[]{0, 0};
+    }
+
     /** Lista aulas de um professor específico, com nome da disciplina. */
     public List<Aula> listarPorProfessor(Long professorId) {
         String sql = """
@@ -77,6 +118,21 @@ public class AulaRepository {
             throw new RuntimeException("Erro ao listar aulas: " + e.getMessage(), e);
         }
         return lista;
+    }
+
+    /** Conta aulas por professor e tipo (para carga horária). */
+    public int contarPorProfessorETipo(Long professorId, Long disciplinaId, String tipo) {
+        String sql = "SELECT COUNT(*) FROM aulas WHERE professor_id = ? AND disciplina_id = ? AND tipo = ?";
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, professorId);
+            stmt.setLong(2, disciplinaId);
+            stmt.setString(3, tipo);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao contar aulas: " + e.getMessage(), e);
+        }
+        return 0;
     }
 
     /** Lista todas as aulas de todos os professores (visão admin). */
