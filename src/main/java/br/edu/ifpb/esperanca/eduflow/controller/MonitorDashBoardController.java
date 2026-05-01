@@ -2,6 +2,7 @@ package br.edu.ifpb.esperanca.eduflow.controller;
 
 import br.edu.ifpb.esperanca.eduflow.MainApp;
 import br.edu.ifpb.esperanca.eduflow.domain.entities.*;
+import br.edu.ifpb.esperanca.eduflow.domain.enums.StatusAgendamento;
 import br.edu.ifpb.esperanca.eduflow.service.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,7 +17,36 @@ import java.util.List;
 public class MonitorDashBoardController {
 
     @FXML private Label lblBemVindo;
-    // Aba: Minhas Agendas
+
+    // --- Aba Disciplinas (como aluno) ---
+    @FXML private TableView<Disciplina> tabelaMatriculadas;
+    @FXML private TableColumn<Disciplina, String> colMatNome;
+    @FXML private TableColumn<Disciplina, String> colMatCodigo;
+    @FXML private TableColumn<Disciplina, String> colMatSemestre;
+    @FXML private TableView<Disciplina> tabelaDisponiveis;
+    @FXML private TableColumn<Disciplina, String> colDispNome;
+    @FXML private TableColumn<Disciplina, String> colDispCodigo;
+    @FXML private TableColumn<Disciplina, String> colDispSemestre;
+    @FXML private Text errorDisciplina;
+    @FXML private Text successDisciplina;
+
+    // --- Aba Agendar (como aluno) ---
+    @FXML private TableView<Agenda> tabelaAgendas;
+    @FXML private TableColumn<Agenda, String> colDisciplina;
+    @FXML private TableColumn<Agenda, String> colHorario;
+    @FXML private TableColumn<Agenda, String> colLocal;
+    @FXML private TableColumn<Agenda, String> colVagas;
+    @FXML private TextArea txtAssunto;
+    @FXML private Text errorAgendamento;
+    @FXML private Text successAgendamento;
+
+    // --- Aba Meus Agendamentos (como aluno) ---
+    @FXML private TableView<Agendamento> tabelaMeusAgendamentos;
+    @FXML private TableColumn<Agendamento, String> colMeuStatus;
+    @FXML private TableColumn<Agendamento, String> colMeuAssunto;
+    @FXML private TableColumn<Agendamento, String> colMeuHorario;
+
+    // --- Aba Minha Agenda (monitor) ---
     @FXML private TableView<Agenda> tabelaMinhasAgendas;
     @FXML private TableColumn<Agenda, String> colAgHorario;
     @FXML private TableColumn<Agenda, String> colAgLocal;
@@ -28,19 +58,33 @@ public class MonitorDashBoardController {
     @FXML private TextField txtHoraInicio;
     @FXML private TextField txtHoraFim;
     @FXML private Spinner<Integer> spVagas;
-    // Aba: Agendamentos para registrar
+    @FXML private Text errorMessage;
+    @FXML private Text successMessage;
+
+    // --- Aba Atendimentos (monitor) ---
     @FXML private TableView<Agendamento> tabelaAgendamentos;
     @FXML private TableColumn<Agendamento, String> colAgdAluno;
     @FXML private TableColumn<Agendamento, String> colAgdAssunto;
     @FXML private TableColumn<Agendamento, String> colAgdStatus;
     @FXML private CheckBox chkPresenca;
     @FXML private TextArea txtConteudo;
-    @FXML private Text errorMessage;
-    @FXML private Text successMessage;
+
+    // --- Aba Relatórios ---
+    @FXML private Label lblTotalAtendimentos;
+    @FXML private Label lblTotalFaltas;
+    @FXML private Label lblHorasMonitoria;
+    @FXML private TableView<Agendamento> tabelaRelatorio;
+    @FXML private TableColumn<Agendamento, String> colRelAluno;
+    @FXML private TableColumn<Agendamento, String> colRelAssunto;
+    @FXML private TableColumn<Agendamento, String> colRelStatus;
+    @FXML private TableColumn<Agendamento, String> colRelData;
 
     private final AgendaService agendaService = new AgendaService();
     private final AgendamentoService agendamentoService = new AgendamentoService();
     private final DisciplinaService disciplinaService = new DisciplinaService();
+    private final AlunoDisciplinaService alunoDisciplinaService = new AlunoDisciplinaService();
+    private final RelatorioService relatorioService = new RelatorioService();
+    private final MonitorDisciplinaService monitorDisciplinaService = new MonitorDisciplinaService();
     private Monitor monitorLogado;
 
     @FXML
@@ -48,41 +92,156 @@ public class MonitorDashBoardController {
         monitorLogado = (Monitor) SessionManager.getInstance().getUsuarioLogado();
         lblBemVindo.setText("Monitor: " + monitorLogado.getNome());
 
+        configurarTabelaDisciplinas();
         carregarDisciplinas();
+
+        configurarTabelaAgendar();
+        carregarAgendas();
+        configurarTabelaMeusAgendamentos();
+        carregarMeusAgendamentos();
+
+        carregarDisciplinasMonitor();
         configurarTabelaAgendas();
-        configurarTabelaAgendamentos();
         carregarMinhasAgendas();
+
+        configurarTabelaAgendamentos();
         carregarAgendamentosParaRegistro();
+
+        configurarTabelaRelatorio();
+    }
+
+    // ===================== DISCIPLINAS (ALUNO) =====================
+
+    private void configurarTabelaDisciplinas() {
+        colMatNome.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNome()));
+        colMatCodigo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCodigo()));
+        colMatSemestre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSemestreLetivo()));
+        colDispNome.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNome()));
+        colDispCodigo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCodigo()));
+        colDispSemestre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSemestreLetivo()));
     }
 
     private void carregarDisciplinas() {
-        List<Disciplina> disciplinas = disciplinaService.listarPorMonitor(monitorLogado.getId());
-        monitorLogado.setDisciplinasVinculadas(disciplinas);
-        if (cbDisciplina != null)
-            cbDisciplina.setItems(FXCollections.observableArrayList(disciplinas));
+        tabelaMatriculadas.setItems(FXCollections.observableArrayList(
+                alunoDisciplinaService.listarMatriculadas(monitorLogado.getId())));
+        tabelaDisponiveis.setItems(FXCollections.observableArrayList(
+                alunoDisciplinaService.listarDisponiveis(monitorLogado.getId())));
+    }
+
+    @FXML
+    public void handleMatricular() {
+        Disciplina selecionada = tabelaDisponiveis.getSelectionModel().getSelectedItem();
+        if (selecionada == null) { showErrorDisc("Selecione uma disciplina disponível."); return; }
+        try {
+            alunoDisciplinaService.matricular(monitorLogado.getId(), selecionada.getId());
+            showSuccessDisc("Matriculado em \"" + selecionada.getNome() + "\" com sucesso!");
+            carregarDisciplinas();
+        } catch (Exception e) { showErrorDisc(e.getMessage()); }
+    }
+
+    @FXML
+    public void handleCancelarMatricula() {
+        Disciplina selecionada = tabelaMatriculadas.getSelectionModel().getSelectedItem();
+        if (selecionada == null) { showErrorDisc("Selecione uma disciplina para cancelar."); return; }
+        try {
+            alunoDisciplinaService.cancelarMatricula(monitorLogado.getId(), selecionada.getId());
+            showSuccessDisc("Matrícula cancelada.");
+            carregarDisciplinas();
+        } catch (Exception e) { showErrorDisc(e.getMessage()); }
+    }
+
+    // ===================== AGENDAR (ALUNO) =====================
+
+    private void configurarTabelaAgendar() {
+        colDisciplina.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getDisciplina() != null ? c.getValue().getDisciplina().getNome() : "—"));
+        colHorario.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getDataHoraInicio() + " → " + c.getValue().getDataHoraFim()));
+        colLocal.setCellValueFactory(c -> {
+            String l = c.getValue().getLocal();
+            return new SimpleStringProperty(l != null && !l.isBlank() ? l : c.getValue().getLink());
+        });
+        colVagas.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getVagasDisponiveis() + "/" + c.getValue().getVagasTotais()));
+    }
+
+    private void carregarAgendas() {
+        tabelaAgendas.setItems(FXCollections.observableArrayList(agendaService.listarAgendasDisponiveis()));
+    }
+
+    @FXML
+    public void handleAgendar() {
+        Agenda selecionada = tabelaAgendas.getSelectionModel().getSelectedItem();
+        if (selecionada == null) { showErrorAg("Selecione um horário."); return; }
+        String assunto = txtAssunto != null ? txtAssunto.getText().trim() : "";
+        if (assunto.isBlank()) { showErrorAg("Descreva o assunto."); return; }
+        try {
+            agendamentoService.agendarMonitoria(monitorLogado, selecionada, assunto);
+            showSuccessAg("Agendamento realizado!");
+            carregarAgendas();
+            carregarMeusAgendamentos();
+            if (txtAssunto != null) txtAssunto.clear();
+        } catch (Exception e) { showErrorAg(e.getMessage()); }
+    }
+
+    // ===================== MEUS AGENDAMENTOS (ALUNO) =====================
+
+    private void configurarTabelaMeusAgendamentos() {
+        colMeuStatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStatus().name()));
+        colMeuAssunto.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getAssunto()));
+        colMeuHorario.setCellValueFactory(c -> {
+            Agenda ag = c.getValue().getAgenda();
+            return new SimpleStringProperty(ag != null ? ag.getDataHoraInicio().toString() : "—");
+        });
+    }
+
+    private void carregarMeusAgendamentos() {
+        tabelaMeusAgendamentos.setItems(FXCollections.observableArrayList(
+                agendamentoService.listarTodosPorAluno(monitorLogado.getId())));
+    }
+
+    @FXML
+    public void handleCancelarAgendamento() {
+        Agendamento selecionado = tabelaMeusAgendamentos.getSelectionModel().getSelectedItem();
+        if (selecionado == null) { return; }
+        try {
+            agendamentoService.cancelarPeloAluno(selecionado, monitorLogado, "Cancelado pelo monitor.");
+            carregarMeusAgendamentos();
+            carregarAgendas();
+        } catch (Exception e) { showError(e.getMessage()); }
+    }
+
+    // ===================== MINHA AGENDA (MONITOR) =====================
+
+    private void carregarDisciplinasMonitor() {
+        // Monitor só tem uma disciplina por vez
+        monitorDisciplinaService.buscarDisciplinaDoMonitor(monitorLogado.getId())
+                .ifPresentOrElse(
+                        disciplina -> {
+                            monitorLogado.setDisciplinasVinculadas(java.util.List.of(disciplina));
+                            if (cbDisciplina != null)
+                                cbDisciplina.setItems(FXCollections.observableArrayList(disciplina));
+                        },
+                        () -> {
+                            monitorLogado.setDisciplinasVinculadas(java.util.List.of());
+                            if (cbDisciplina != null) cbDisciplina.getItems().clear();
+                            showError("Você não possui disciplina vinculada. Solicite ao administrador.");
+                        }
+                );
     }
 
     private void configurarTabelaAgendas() {
         if (colAgHorario != null)
-            colAgHorario.setCellValueFactory(cell -> new SimpleStringProperty(
-                    cell.getValue().getDataHoraInicio() + " → " + cell.getValue().getDataHoraFim()));
+            colAgHorario.setCellValueFactory(c -> new SimpleStringProperty(
+                    c.getValue().getDataHoraInicio() + " → " + c.getValue().getDataHoraFim()));
         if (colAgLocal != null)
-            colAgLocal.setCellValueFactory(cell -> {
-                String l = cell.getValue().getLocal();
-                return new SimpleStringProperty(l != null && !l.isBlank() ? l : cell.getValue().getLink());
+            colAgLocal.setCellValueFactory(c -> {
+                String l = c.getValue().getLocal();
+                return new SimpleStringProperty(l != null && !l.isBlank() ? l : c.getValue().getLink());
             });
         if (colAgVagas != null)
-            colAgVagas.setCellValueFactory(cell -> new SimpleStringProperty(
-                    cell.getValue().getVagasDisponiveis() + "/" + cell.getValue().getVagasTotais()));
-    }
-
-    private void configurarTabelaAgendamentos() {
-        if (colAgdAssunto != null)
-            colAgdAssunto.setCellValueFactory(cell ->
-                    new SimpleStringProperty(cell.getValue().getAssunto()));
-        if (colAgdStatus != null)
-            colAgdStatus.setCellValueFactory(cell ->
-                    new SimpleStringProperty(cell.getValue().getStatus().name()));
+            colAgVagas.setCellValueFactory(c -> new SimpleStringProperty(
+                    c.getValue().getVagasDisponiveis() + "/" + c.getValue().getVagasTotais()));
     }
 
     private void carregarMinhasAgendas() {
@@ -92,38 +251,47 @@ public class MonitorDashBoardController {
         tabelaMinhasAgendas.setItems(FXCollections.observableArrayList(agendas));
     }
 
-    private void carregarAgendamentosParaRegistro() {
-        if (tabelaAgendamentos == null) return;
-        List<Agendamento> ags = agendamentoService.listarParaValidacao(monitorLogado.getId());
-        tabelaAgendamentos.setItems(FXCollections.observableArrayList(ags));
-    }
-
     @FXML
     public void handleCadastrarAgenda() {
-        errorMessage.setVisible(false);
+        if (errorMessage != null) errorMessage.setVisible(false);
         Disciplina disciplina = cbDisciplina != null ? cbDisciplina.getValue() : null;
         if (disciplina == null) { showError("Selecione uma disciplina."); return; }
         if (dpData == null || dpData.getValue() == null) { showError("Selecione a data."); return; }
-
         try {
             Agenda nova = new Agenda();
             nova.setLocal(txtLocal != null ? txtLocal.getText().trim() : "");
             nova.setLink(txtLink != null ? txtLink.getText().trim() : "");
             nova.setVagasTotais(spVagas != null ? spVagas.getValue() : 1);
-
             String[] ini = (txtHoraInicio != null ? txtHoraInicio.getText() : "08:00").split(":");
             String[] fim = (txtHoraFim != null ? txtHoraFim.getText() : "09:00").split(":");
             LocalDateTime inicio = dpData.getValue().atTime(Integer.parseInt(ini[0]), Integer.parseInt(ini[1]));
             LocalDateTime fimDt  = dpData.getValue().atTime(Integer.parseInt(fim[0]), Integer.parseInt(fim[1]));
             nova.setDataHoraInicio(inicio);
             nova.setDataHoraFim(fimDt);
-
             agendaService.cadastrarAgenda(monitorLogado, disciplina, nova);
             showSuccess("Agenda cadastrada com sucesso!");
             carregarMinhasAgendas();
-        } catch (Exception e) {
-            showError(e.getMessage());
-        }
+        } catch (Exception e) { showError(e.getMessage()); }
+    }
+
+    // ===================== ATENDIMENTOS (MONITOR) =====================
+
+    private void configurarTabelaAgendamentos() {
+        if (colAgdAluno != null)
+            colAgdAluno.setCellValueFactory(c -> {
+                Agendamento ag = c.getValue();
+                return new SimpleStringProperty(ag.getAluno() != null ? ag.getAluno().getNome() : "—");
+            });
+        if (colAgdAssunto != null)
+            colAgdAssunto.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getAssunto()));
+        if (colAgdStatus != null)
+            colAgdStatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStatus().name()));
+    }
+
+    private void carregarAgendamentosParaRegistro() {
+        if (tabelaAgendamentos == null) return;
+        tabelaAgendamentos.setItems(FXCollections.observableArrayList(
+                agendamentoService.listarParaValidacao(monitorLogado.getId())));
     }
 
     @FXML
@@ -131,18 +299,43 @@ public class MonitorDashBoardController {
         Agendamento selecionado = tabelaAgendamentos != null
                 ? tabelaAgendamentos.getSelectionModel().getSelectedItem() : null;
         if (selecionado == null) { showError("Selecione um agendamento."); return; }
-
         String conteudo = txtConteudo != null ? txtConteudo.getText().trim() : "";
         boolean presenca = chkPresenca != null && chkPresenca.isSelected();
-
         try {
             agendamentoService.registrarAtendimento(monitorLogado, selecionado, presenca, conteudo);
             showSuccess("Atendimento registrado!");
             carregarAgendamentosParaRegistro();
-        } catch (Exception e) {
-            showError(e.getMessage());
-        }
+        } catch (Exception e) { showError(e.getMessage()); }
     }
+
+    // ===================== RELATÓRIOS =====================
+
+    private void configurarTabelaRelatorio() {
+        colRelAluno.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getAluno() != null ? c.getValue().getAluno().getNome() : "—"));
+        colRelAssunto.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getAssunto()));
+        colRelStatus.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getStatus() == StatusAgendamento.REALIZADO ? "✅ Presente" : "❌ Faltou"));
+        colRelData.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getDataHoraSolicitacao() != null
+                        ? c.getValue().getDataHoraSolicitacao().toLocalDate().toString() : "—"));
+    }
+
+    @FXML
+    public void handleGerarRelatorio() {
+        long atendimentos = relatorioService.totalAtendimentos(monitorLogado.getId());
+        long faltas = relatorioService.totalFaltas(monitorLogado.getId());
+        long horas = relatorioService.horasDeMonitoria(monitorLogado.getId());
+
+        lblTotalAtendimentos.setText(String.valueOf(atendimentos));
+        lblTotalFaltas.setText(String.valueOf(faltas));
+        lblHorasMonitoria.setText(horas + "h");
+
+        List<Agendamento> detalhes = relatorioService.listarAtendimentosFinalizados(monitorLogado.getId());
+        tabelaRelatorio.setItems(FXCollections.observableArrayList(detalhes));
+    }
+
+    // ===================== LOGOUT =====================
 
     @FXML
     public void handleLogout() throws IOException {
@@ -150,6 +343,24 @@ public class MonitorDashBoardController {
         MainApp.setRoot("login");
     }
 
+    // ===================== HELPERS =====================
+
+    private void showErrorDisc(String msg) {
+        if (errorDisciplina != null) { errorDisciplina.setText(msg); errorDisciplina.setVisible(true); }
+        if (successDisciplina != null) successDisciplina.setVisible(false);
+    }
+    private void showSuccessDisc(String msg) {
+        if (successDisciplina != null) { successDisciplina.setText(msg); successDisciplina.setVisible(true); }
+        if (errorDisciplina != null) errorDisciplina.setVisible(false);
+    }
+    private void showErrorAg(String msg) {
+        if (errorAgendamento != null) { errorAgendamento.setText(msg); errorAgendamento.setVisible(true); }
+        if (successAgendamento != null) successAgendamento.setVisible(false);
+    }
+    private void showSuccessAg(String msg) {
+        if (successAgendamento != null) { successAgendamento.setText(msg); successAgendamento.setVisible(true); }
+        if (errorAgendamento != null) errorAgendamento.setVisible(false);
+    }
     private void showError(String msg) { if (errorMessage != null) { errorMessage.setText(msg); errorMessage.setVisible(true); } }
     private void showSuccess(String msg) { if (successMessage != null) { successMessage.setText(msg); successMessage.setVisible(true); } }
 }
