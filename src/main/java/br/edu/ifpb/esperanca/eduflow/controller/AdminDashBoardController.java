@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import br.edu.ifpb.esperanca.eduflow.service.MonitorDisciplinaService;
 import br.edu.ifpb.esperanca.eduflow.service.ProfessorDisciplinaService;
 import br.edu.ifpb.esperanca.eduflow.domain.entities.Aula;
 import br.edu.ifpb.esperanca.eduflow.service.AulaService;
@@ -71,6 +72,12 @@ public class AdminDashBoardController {
     @FXML private TableColumn<Disciplina, String> colDPNome;
     @FXML private TableColumn<Disciplina, String> colDPCodigo;
     @FXML private TableColumn<Disciplina, String> colDPSemestre;
+
+    // --- Aba Usuários: Vínculo Monitor ↔ Disciplina ---
+    @FXML private ComboBox<Disciplina> comboDisciplinaMonitor;
+    @FXML private Label lblDisciplinaAtualMonitor;
+
+    private final MonitorDisciplinaService monitorDisciplinaService = new MonitorDisciplinaService();
 
     private final ProfessorDisciplinaService professorDisciplinaService = new ProfessorDisciplinaService();
 
@@ -246,12 +253,29 @@ public class AdminDashBoardController {
             public Disciplina fromString(String s) { return null; }
         });
 
-        // Ao selecionar um usuário na tabela, se for professor carrega suas disciplinas automaticamente
+        // Preenche o combo de disciplinas para vínculo de monitor
+        comboDisciplinaMonitor.setItems(FXCollections.observableArrayList(disciplinas));
+        comboDisciplinaMonitor.setConverter(new javafx.util.StringConverter<>() {
+            public String toString(Disciplina d) { return d != null ? d.getNome() + " (" + d.getCodigo() + ")" : ""; }
+            public Disciplina fromString(String s) { return null; }
+        });
+
+        // Ao selecionar usuário, atualiza seções de professor e monitor
         tabelaUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
-            if (selected != null && selected.getRole().name().equals("PROFESSOR")) {
+            if (selected == null) {
+                tabelaDisciplinasProfessor.getItems().clear();
+                if (lblDisciplinaAtualMonitor != null) lblDisciplinaAtualMonitor.setText("");
+                return;
+            }
+            if (selected.getRole().name().equals("PROFESSOR")) {
                 atualizarTabelaDisciplinasProfessor(selected.getId());
+                if (lblDisciplinaAtualMonitor != null) lblDisciplinaAtualMonitor.setText("");
+            } else if (selected.getRole().name().equals("MONITOR")) {
+                tabelaDisciplinasProfessor.getItems().clear();
+                atualizarLabelDisciplinaMonitor(selected.getId());
             } else {
                 tabelaDisciplinasProfessor.getItems().clear();
+                if (lblDisciplinaAtualMonitor != null) lblDisciplinaAtualMonitor.setText("");
             }
         });
     }
@@ -299,6 +323,40 @@ public class AdminDashBoardController {
         if (selecionado == null) { showErrorUsuario("Selecione um professor na tabela."); return; }
         if (!selecionado.getRole().name().equals("PROFESSOR")) { showErrorUsuario("O usuário selecionado não é um professor."); return; }
         atualizarTabelaDisciplinasProfessor(selecionado.getId());
+    }
+
+    private void atualizarLabelDisciplinaMonitor(Long monitorId) {
+        if (lblDisciplinaAtualMonitor == null) return;
+        monitorDisciplinaService.buscarDisciplinaDoMonitor(monitorId).ifPresentOrElse(
+                d -> lblDisciplinaAtualMonitor.setText("Disciplina atual: " + d.getNome() + " (" + d.getCodigo() + ")"),
+                () -> lblDisciplinaAtualMonitor.setText("Sem disciplina vinculada.")
+        );
+    }
+
+    @FXML
+    public void handleVincularMonitor() {
+        Usuario selecionado = tabelaUsuarios.getSelectionModel().getSelectedItem();
+        if (selecionado == null) { showErrorUsuario("Selecione um monitor na tabela."); return; }
+        if (!selecionado.getRole().name().equals("MONITOR")) { showErrorUsuario("O usuário selecionado não é um monitor."); return; }
+        Disciplina disciplina = comboDisciplinaMonitor.getValue();
+        if (disciplina == null) { showErrorUsuario("Selecione uma disciplina."); return; }
+        try {
+            monitorDisciplinaService.vincular(selecionado.getId(), disciplina.getId());
+            showSuccessUsuario("Monitor vinculado a \"" + disciplina.getNome() + "\".");
+            atualizarLabelDisciplinaMonitor(selecionado.getId());
+        } catch (Exception e) { showErrorUsuario(e.getMessage()); }
+    }
+
+    @FXML
+    public void handleDesvincularMonitor() {
+        Usuario selecionado = tabelaUsuarios.getSelectionModel().getSelectedItem();
+        if (selecionado == null) { showErrorUsuario("Selecione um monitor na tabela."); return; }
+        if (!selecionado.getRole().name().equals("MONITOR")) { showErrorUsuario("O usuário selecionado não é um monitor."); return; }
+        try {
+            monitorDisciplinaService.desvincular(selecionado.getId());
+            showSuccessUsuario("Monitor desvinculado da disciplina.");
+            atualizarLabelDisciplinaMonitor(selecionado.getId());
+        } catch (Exception e) { showErrorUsuario(e.getMessage()); }
     }
 
     // ===================== CALENDÁRIOS =====================

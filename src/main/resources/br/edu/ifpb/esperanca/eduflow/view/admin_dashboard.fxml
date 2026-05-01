@@ -102,6 +102,19 @@
                         </columns>
                     </TableView>
 
+
+                    <!-- Vínculo Monitor ↔ Disciplina (1 por vez) -->
+                    <Label text="Vínculo Monitor ↔ Disciplina (1 por vez):" style="-fx-font-weight: bold; -fx-padding: 8 0 0 0; -fx-text-fill: #1A6B3C;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Disciplina:"/>
+                        <ComboBox fx:id="comboDisciplinaMonitor" prefWidth="220"/>
+                        <Button text="Vincular Monitor" onAction="#handleVincularMonitor"
+                                style="-fx-background-color: #1A6B3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Desvincular Monitor" onAction="#handleDesvincularMonitor"
+                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </HBox>
+                    <Label fx:id="lblDisciplinaAtualMonitor" text="" style="-fx-text-fill: #1A6B3C; -fx-font-style: italic;"/>
+
                     <Text fx:id="errorUsuario" fill="RED" visible="false"/>
                     <Text fx:id="successUsuario" fill="GREEN" visible="false"/>
                 </VBox>
