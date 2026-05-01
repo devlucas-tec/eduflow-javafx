@@ -87,14 +87,13 @@
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Label text="Disciplina:"/>
                         <ComboBox fx:id="comboDisciplinaVinculo" prefWidth="220"/>
-                        <Button text="Vincular" onAction="#handleVincularDisciplina"
+                        <Button text="Vincular Professor" onAction="#handleVincularDisciplina"
                                 style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Desvincular" onAction="#handleDesvincularDisciplina"
+                        <Button text="Desvincular Professor" onAction="#handleDesvincularDisciplina"
                                 style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Ver Disciplinas do Professor" onAction="#handleVerDisciplinasProfessor"
-                                style="-fx-background-color: #2980B9; -fx-text-fill: white; -fx-background-radius: 5;"/>
+
                     </HBox>
-                    <TableView fx:id="tabelaDisciplinasProfessor" prefHeight="130">
+                    <TableView fx:id="tabelaDisciplinasProfessor" prefHeight="200">
                         <columns>
                             <TableColumn fx:id="colDPNome" text="Disciplina" prefWidth="250"/>
                             <TableColumn fx:id="colDPCodigo" text="Código" prefWidth="120"/>
@@ -104,17 +103,22 @@
 
 
                     <!-- Vínculo Monitor ↔ Disciplina (1 por vez) -->
-                    <Label text="Vínculo Monitor ↔ Disciplina (1 por vez):" style="-fx-font-weight: bold; -fx-padding: 8 0 0 0; -fx-text-fill: #1A6B3C;"/>
+                    <Label text="Vínculo Monitor ↔ Disciplina (1 por vez):" style="-fx-font-weight: bold; -fx-padding: 8 0 0 0;"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Label text="Disciplina:"/>
                         <ComboBox fx:id="comboDisciplinaMonitor" prefWidth="220"/>
                         <Button text="Vincular Monitor" onAction="#handleVincularMonitor"
-                                style="-fx-background-color: #1A6B3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
                         <Button text="Desvincular Monitor" onAction="#handleDesvincularMonitor"
                                 style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
                     </HBox>
-                    <Label fx:id="lblDisciplinaAtualMonitor" text="" style="-fx-text-fill: #1A6B3C; -fx-font-style: italic;"/>
-
+                    <TableView fx:id="tabelaDisciplinasMonitor" prefHeight="200">
+                        <columns>
+                            <TableColumn fx:id="colDMNome" text="Nome" prefWidth="150" />
+                            <TableColumn fx:id="colDMCodigo" text="Código" prefWidth="100" />
+                            <TableColumn fx:id="colDMSemestre" text="Semestre" prefWidth="100" />
+                        </columns>
+                    </TableView>
                     <Text fx:id="errorUsuario" fill="RED" visible="false"/>
                     <Text fx:id="successUsuario" fill="GREEN" visible="false"/>
                 </VBox>

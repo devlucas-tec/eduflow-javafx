@@ -75,12 +75,13 @@ public class AdminDashBoardController {
 
     // --- Aba Usuários: Vínculo Monitor ↔ Disciplina ---
     @FXML private ComboBox<Disciplina> comboDisciplinaMonitor;
-    @FXML private Label lblDisciplinaAtualMonitor;
+    @FXML private TableView<Disciplina> tabelaDisciplinasMonitor;
+    @FXML private TableColumn<Disciplina, String> colDMNome;
+    @FXML private TableColumn<Disciplina, String> colDMCodigo;
+    @FXML private TableColumn<Disciplina, String> colDMSemestre;
 
     private final MonitorDisciplinaService monitorDisciplinaService = new MonitorDisciplinaService();
-
     private final ProfessorDisciplinaService professorDisciplinaService = new ProfessorDisciplinaService();
-
     private final AulaService aulaService = new AulaService();
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -241,11 +242,17 @@ public class AdminDashBoardController {
     }
 
     private void configurarTabelaDisciplinasProfessor() {
+        // Configura colunas da tabela do professor
         colDPNome.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNome()));
         colDPCodigo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCodigo()));
         colDPSemestre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSemestreLetivo()));
 
-        // Preenche o combo de disciplinas para vínculo
+        // Configura colunas da tabela do monitor
+        colDMNome.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNome()));
+        colDMCodigo.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCodigo()));
+        colDMSemestre.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSemestreLetivo()));
+
+        // Preenche o combo de disciplinas para vínculo de professor
         List<Disciplina> disciplinas = disciplinaService.listarTodas();
         comboDisciplinaVinculo.setItems(FXCollections.observableArrayList(disciplinas));
         comboDisciplinaVinculo.setConverter(new javafx.util.StringConverter<>() {
@@ -264,18 +271,18 @@ public class AdminDashBoardController {
         tabelaUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected == null) {
                 tabelaDisciplinasProfessor.getItems().clear();
-                if (lblDisciplinaAtualMonitor != null) lblDisciplinaAtualMonitor.setText("");
+                tabelaDisciplinasMonitor.getItems().clear();
                 return;
             }
             if (selected.getRole().name().equals("PROFESSOR")) {
                 atualizarTabelaDisciplinasProfessor(selected.getId());
-                if (lblDisciplinaAtualMonitor != null) lblDisciplinaAtualMonitor.setText("");
+                tabelaDisciplinasMonitor.getItems().clear();
             } else if (selected.getRole().name().equals("MONITOR")) {
                 tabelaDisciplinasProfessor.getItems().clear();
-                atualizarLabelDisciplinaMonitor(selected.getId());
+                atualizarTabelaDisciplinasMonitor(selected.getId());
             } else {
                 tabelaDisciplinasProfessor.getItems().clear();
-                if (lblDisciplinaAtualMonitor != null) lblDisciplinaAtualMonitor.setText("");
+                tabelaDisciplinasMonitor.getItems().clear();
             }
         });
     }
@@ -283,6 +290,13 @@ public class AdminDashBoardController {
     private void atualizarTabelaDisciplinasProfessor(Long professorId) {
         List<Disciplina> disciplinas = professorDisciplinaService.listarPorProfessor(professorId);
         tabelaDisciplinasProfessor.setItems(FXCollections.observableArrayList(disciplinas));
+    }
+
+    private void atualizarTabelaDisciplinasMonitor(Long monitorId) {
+        monitorDisciplinaService.buscarDisciplinaDoMonitor(monitorId).ifPresentOrElse(
+                d -> tabelaDisciplinasMonitor.setItems(FXCollections.observableArrayList(d)),
+                () -> tabelaDisciplinasMonitor.getItems().clear()
+        );
     }
 
     @FXML
@@ -325,14 +339,6 @@ public class AdminDashBoardController {
         atualizarTabelaDisciplinasProfessor(selecionado.getId());
     }
 
-    private void atualizarLabelDisciplinaMonitor(Long monitorId) {
-        if (lblDisciplinaAtualMonitor == null) return;
-        monitorDisciplinaService.buscarDisciplinaDoMonitor(monitorId).ifPresentOrElse(
-                d -> lblDisciplinaAtualMonitor.setText("Disciplina atual: " + d.getNome() + " (" + d.getCodigo() + ")"),
-                () -> lblDisciplinaAtualMonitor.setText("Sem disciplina vinculada.")
-        );
-    }
-
     @FXML
     public void handleVincularMonitor() {
         Usuario selecionado = tabelaUsuarios.getSelectionModel().getSelectedItem();
@@ -343,7 +349,7 @@ public class AdminDashBoardController {
         try {
             monitorDisciplinaService.vincular(selecionado.getId(), disciplina.getId());
             showSuccessUsuario("Monitor vinculado a \"" + disciplina.getNome() + "\".");
-            atualizarLabelDisciplinaMonitor(selecionado.getId());
+            atualizarTabelaDisciplinasMonitor(selecionado.getId());
         } catch (Exception e) { showErrorUsuario(e.getMessage()); }
     }
 
@@ -355,7 +361,7 @@ public class AdminDashBoardController {
         try {
             monitorDisciplinaService.desvincular(selecionado.getId());
             showSuccessUsuario("Monitor desvinculado da disciplina.");
-            atualizarLabelDisciplinaMonitor(selecionado.getId());
+            atualizarTabelaDisciplinasMonitor(selecionado.getId());
         } catch (Exception e) { showErrorUsuario(e.getMessage()); }
     }
 
@@ -537,4 +543,3 @@ public class AdminDashBoardController {
         if (errorCalendario != null) errorCalendario.setVisible(false);
     }
 }
-
