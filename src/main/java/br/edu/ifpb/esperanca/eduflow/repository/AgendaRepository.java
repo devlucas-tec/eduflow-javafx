@@ -1,10 +1,9 @@
 package br.edu.ifpb.esperanca.eduflow.repository;
 
 import br.edu.ifpb.esperanca.eduflow.domain.entities.Agenda;
-import br.edu.ifpb.esperanca.eduflow.domain.entities.Monitor;
 
 import java.sql.*;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

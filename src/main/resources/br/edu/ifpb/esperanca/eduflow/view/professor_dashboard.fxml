@@ -33,7 +33,54 @@
                 </VBox>
             </Tab>
 
-            <!-- ABA 2: Validação de Atendimentos -->
+            <!-- ABA 2: Calendário de Aulas -->
+            <Tab text="Calendário de Aulas">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <Label text="Calendário de Aulas" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Disciplina:"/>
+                        <ComboBox fx:id="comboDisciplinaCalendario" prefWidth="220"/>
+                        <Button text="Filtrar" onAction="#handleFiltrarAulas"
+                                style="-fx-background-color: #2980B9; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Ver Todas" onAction="#handleVerTodasMinhasAulas"
+                                style="-fx-background-color: #7F8C8D; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Label fx:id="lblCargaHoraria" text="" style="-fx-font-weight: bold; -fx-text-fill: #6C3483;"/>
+                    </HBox>
+
+                    <TableView fx:id="tabelaMinhasAulas" VBox.vgrow="ALWAYS" prefHeight="220">
+                        <columns>
+                            <TableColumn fx:id="colCalData" text="Data/Hora" prefWidth="150"/>
+                            <TableColumn fx:id="colCalDisciplina" text="Disciplina" prefWidth="180"/>
+                            <TableColumn fx:id="colCalTipo" text="Tipo" prefWidth="100"/>
+                            <TableColumn fx:id="colCalJustificativa" text="Justificativa" prefWidth="250"/>
+                        </columns>
+                    </TableView>
+
+                    <Label text="Adicionar / Editar Aula:" style="-fx-font-weight: bold;"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtCalData" promptText="Data (dd/MM/yyyy HH:mm)" prefWidth="175"/>
+                        <ComboBox fx:id="comboCalTipo" prefWidth="120"/>
+                        <ComboBox fx:id="comboCalDisciplina" prefWidth="180"/>
+                        <TextField fx:id="txtCalJustificativa" promptText="Justificativa (opcional)" prefWidth="200"/>
+                    </HBox>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Button text="Adicionar" onAction="#handleAdicionarMinhaAula"
+                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Editar Selecionada" onAction="#handleEditarMinhaAula"
+                                style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Remover Selecionada" onAction="#handleRemoverMinhaAula"
+                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                        <Button text="Limpar" onAction="#handleLimparCalendario"
+                                style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </HBox>
+
+                    <Text fx:id="errorCalendario" fill="RED" visible="false"/>
+                    <Text fx:id="successCalendario" fill="GREEN" visible="false"/>
+                </VBox>
+            </Tab>
+
+            <!-- ABA 3: Validação de Atendimentos -->
             <Tab text="Validação de Atendimentos">
                 <VBox spacing="10" style="-fx-padding: 15;">
                     <Label text="Atendimentos para Aprovar (RN02/RN09)"
