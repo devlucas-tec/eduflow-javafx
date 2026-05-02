@@ -87,15 +87,55 @@
                            style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
                     <TableView fx:id="tabelaParaValidar" prefHeight="350" VBox.vgrow="ALWAYS">
                         <columns>
-                            <TableColumn fx:id="colAluno" text="Aluno" prefWidth="200"/>
-                            <TableColumn fx:id="colAssunto" text="Assunto" prefWidth="300"/>
-                            <TableColumn fx:id="colStatus" text="Status" prefWidth="150"/>
+                            <TableColumn fx:id="colAluno" text="Aluno" prefWidth="160"/>
+                            <TableColumn fx:id="colAssunto" text="Assunto" prefWidth="220"/>
+                            <TableColumn fx:id="colStatus" text="Status" prefWidth="130"/>
+                            <TableColumn fx:id="colJustificativa" text="Justificativa do Cancelamento" prefWidth="240"/>
                         </columns>
                     </TableView>
                     <Button text="Validar Atendimento Selecionado" onAction="#handleValidar"
                             style="-fx-background-color: #6C3483; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
                     <Text fx:id="errorMessage" fill="RED" visible="false"/>
                     <Text fx:id="successMessage" fill="GREEN" visible="false"/>
+                </VBox>
+            </Tab>
+
+            <!-- ABA 4: Monitores das Minhas Disciplinas -->
+            <Tab text="Monitores">
+                <VBox spacing="10" style="-fx-padding: 15;">
+                    <Label text="Agenda dos Monitores" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Disciplina:"/>
+                        <ComboBox fx:id="comboDisciplinaMonitor" prefWidth="220"/>
+                        <Button text="Carregar Agenda" onAction="#handleCarregarAgendaMonitor"
+                                style="-fx-background-color: #6C3483; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                    </HBox>
+
+                    <!-- Tabela de agendas do monitor -->
+                    <Label text="Sessões de monitoria:" style="-fx-font-weight: bold;"/>
+                    <TableView fx:id="tabelaAgendasMonitor" prefHeight="200" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colMonNome" text="Monitor" prefWidth="160"/>
+                            <TableColumn fx:id="colMonHorario" text="Data/Hora" prefWidth="160"/>
+                            <TableColumn fx:id="colMonLocal" text="Local / Link" prefWidth="160"/>
+                            <TableColumn fx:id="colMonStatus" text="Status" prefWidth="90"/>
+                            <TableColumn fx:id="colMonJustificativa" text="Justificativa do Cancelamento" prefWidth="240"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Tabela de agendamentos da sessão selecionada -->
+                    <Label text="Agendamentos da sessão selecionada:" style="-fx-font-weight: bold;"/>
+                    <TableView fx:id="tabelaAgendamentosMonitor" prefHeight="180">
+                        <columns>
+                            <TableColumn fx:id="colAgmAluno" text="Aluno" prefWidth="180"/>
+                            <TableColumn fx:id="colAgmAssunto" text="Assunto" prefWidth="220"/>
+                            <TableColumn fx:id="colAgmStatus" text="Status" prefWidth="130"/>
+                            <TableColumn fx:id="colAgmJustificativa" text="Justificativa" prefWidth="220"/>
+                        </columns>
+                    </TableView>
+
+                    <Text fx:id="errorMonitor" fill="RED" visible="false"/>
                 </VBox>
             </Tab>
 
