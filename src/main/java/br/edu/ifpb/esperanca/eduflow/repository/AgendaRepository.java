@@ -99,6 +99,32 @@ public class AgendaRepository {
         return lista;
     }
 
+    /** Busca todas as agendas de uma disciplina, incluindo canceladas — para visão do professor. */
+    public List<Agenda> listarPorDisciplina(Long disciplinaId) {
+        String sql = """
+            SELECT a.*, d.nome AS disciplina_nome,
+                   u.nome AS monitor_nome
+            FROM agendas a
+            JOIN disciplinas d ON a.disciplina_id = d.id
+            JOIN usuarios u ON a.monitor_id = u.id
+            WHERE a.disciplina_id = ?
+            ORDER BY a.data_hora_inicio DESC
+            """;
+        List<Agenda> lista = new ArrayList<>();
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, disciplinaId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Agenda ag = mapear(rs);
+                try { ag.setMonitorNome(rs.getString("monitor_nome")); } catch (SQLException ignored) {}
+                lista.add(ag);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar agendas da disciplina: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
     public void atualizarVagas(Agenda agenda) {
         String sql = "UPDATE agendas SET vagas_ocupadas = ? WHERE id = ?";
         try (PreparedStatement stmt = conn().prepareStatement(sql)) {

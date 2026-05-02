@@ -25,6 +25,10 @@ public class AgendaService {
         return agendaRepository.salvar(validada);
     }
 
+    public List<Agenda> listarPorDisciplina(Long disciplinaId) {
+        return agendaRepository.listarPorDisciplina(disciplinaId);
+    }
+
     public List<Agenda> listarAgendasDisponiveis() {
         return agendaRepository.listarDisponiveis();
     }
