@@ -19,6 +19,10 @@ public class Agenda {
     private Disciplina disciplina;
     private boolean cancelada;
     private String justificativa;
+    private String monitorNome;
+
+    public String getMonitorNome() { return monitorNome; }
+    public void setMonitorNome(String monitorNome) { this.monitorNome = monitorNome; }
 
     public Agenda() {}
 
