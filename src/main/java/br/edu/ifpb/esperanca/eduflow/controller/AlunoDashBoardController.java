@@ -43,6 +43,7 @@ public class AlunoDashBoardController {
     @FXML private TableColumn<Agendamento, String> colMeuStatus;
     @FXML private TableColumn<Agendamento, String> colMeuAssunto;
     @FXML private TableColumn<Agendamento, String> colMeuHorario;
+    @FXML private TableColumn<Agendamento, String> colMeuJustificativa;
 
     private final AgendaService agendaService = new AgendaService();
     private final AgendamentoService agendamentoService = new AgendamentoService();
@@ -134,6 +135,10 @@ public class AlunoDashBoardController {
             Agenda ag = cell.getValue().getAgenda();
             return new SimpleStringProperty(ag != null ? ag.getDataHoraInicio().toString() : "—");
         });
+        if (colMeuJustificativa != null)
+            colMeuJustificativa.setCellValueFactory(cell ->
+                    new SimpleStringProperty(cell.getValue().getJustificativa() != null
+                            ? cell.getValue().getJustificativa() : ""));
     }
 
     private void carregarAgendas() {
@@ -169,7 +174,7 @@ public class AlunoDashBoardController {
         Agendamento selecionado = tabelaMeusAgendamentos.getSelectionModel().getSelectedItem();
         if (selecionado == null) { showError("Selecione um agendamento para cancelar."); return; }
         try {
-            agendamentoService.cancelarPeloAluno(selecionado, alunoLogado, "Cancelado pelo aluno.");
+            agendamentoService.cancelarPeloAluno(selecionado, alunoLogado);
             showSuccess("Agendamento cancelado.");
             carregarMeusAgendamentos();
             carregarAgendas();

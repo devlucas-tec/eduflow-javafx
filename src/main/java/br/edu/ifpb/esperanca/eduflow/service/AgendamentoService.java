@@ -17,47 +17,42 @@ public class AgendamentoService {
         this.agendaRepository = new AgendaRepository();
     }
 
-    /**
-     * Aluno agenda uma monitoria.
-     * Delega validações RN01/RN03/RN04/RN08 ao Modelo Rico.
-     */
     public Agendamento agendarMonitoria(Aluno aluno, Agenda agenda, String assunto) {
         List<Agendamento> ativos = agendamentoRepository.listarAtivosPorAluno(aluno.getId());
-        // Rehidrata agendas nos ativos para que temConflito() possa comparar horários
         ativos.forEach(a -> agendaRepository.buscarPorId(a.getAgenda() != null
                 ? a.getAgenda().getId() : 0L).ifPresent(a::setAgenda));
-
         Agendamento novo = aluno.agendarMonitoria(agenda, ativos, assunto);
         agendaRepository.atualizarVagas(agenda);
         return agendamentoRepository.salvar(novo);
     }
 
-    /**
-     * Aluno cancela um agendamento (RN05).
-     */
-    public void cancelarPeloAluno(Agendamento agendamento, Aluno aluno, String justificativa) {
-        agendamento.cancelarPeloAluno(justificativa);
+    public void cancelarPeloAluno(Agendamento agendamento, Aluno aluno) {
+        agendamento.cancelarPeloAluno();
         agendaRepository.atualizarVagas(agendamento.getAgenda());
-        agendamentoRepository.atualizarStatus(agendamento.getId(), StatusAgendamento.CANCELADO_ALUNO);
+        agendamentoRepository.cancelarAgendamento(agendamento.getId(),
+                StatusAgendamento.CANCELADO_ALUNO, null);
     }
 
     /**
      * Monitor cancela um agendamento (RN05).
+     * A justificativa fica salva na coluna justificativa de agendamentos —
+     * aluno e professor a visualizam nas suas respectivas tabelas.
      */
     public void cancelarPeloMonitor(Agendamento agendamento, String justificativa) {
         agendamento.cancelarPeloMonitor(justificativa);
-        agendaRepository.atualizarVagas(agendamento.getAgenda());
-        agendamentoRepository.atualizarStatus(agendamento.getId(), StatusAgendamento.CANCELADO_MONITOR);
+        agendamentoRepository.cancelarAgendamento(agendamento.getId(),
+                StatusAgendamento.CANCELADO_MONITOR, justificativa);
     }
 
-    /**
-     * Monitor registra atendimento (RN06).
-     */
     public Atendimento registrarAtendimento(Monitor monitor, Agendamento agendamento,
                                             boolean presenca, String conteudo) {
         Atendimento at = monitor.registrarAtendimento(agendamento, presenca, conteudo);
         agendamentoRepository.atualizarStatus(agendamento.getId(), agendamento.getStatus());
         return at;
+    }
+
+    public List<Agendamento> listarPorAgenda(Long agendaId) {
+        return agendamentoRepository.listarPorAgenda(agendaId);
     }
 
     public List<Agendamento> listarAtivosPorAluno(Long alunoId) {
