@@ -36,4 +36,12 @@ public class AgendaService {
     public Optional<Agenda> buscarPorId(Long id) {
         return agendaRepository.buscarPorId(id);
     }
+
+    /**
+     * Cancela a sessão de monitoria: marca a agenda como cancelada
+     * e persiste a justificativa na tabela agendas.
+     */
+    public void cancelarSessao(Long agendaId, String justificativa) {
+        agendaRepository.cancelarSessao(agendaId, justificativa);
+    }
 }

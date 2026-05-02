@@ -17,6 +17,8 @@ public class Agenda {
     private int vagasOcupadas;
     private Monitor monitor;
     private Disciplina disciplina;
+    private boolean cancelada;
+    private String justificativa;
 
     public Agenda() {}
 
@@ -68,4 +70,8 @@ public class Agenda {
     public void setMonitor(Monitor monitor) { this.monitor = monitor; }
     public Disciplina getDisciplina() { return disciplina; }
     public void setDisciplina(Disciplina disciplina) { this.disciplina = disciplina; }
+    public boolean isCancelada() { return cancelada; }
+    public void setCancelada(boolean cancelada) { this.cancelada = cancelada; }
+    public String getJustificativa() { return justificativa; }
+    public void setJustificativa(String justificativa) { this.justificativa = justificativa; }
 }
