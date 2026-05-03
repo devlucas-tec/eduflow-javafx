@@ -16,7 +16,7 @@
         </HBox>
     </top>
     <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
 
             <!-- ABA 1: Minhas Disciplinas (como aluno) -->
             <Tab text="Minhas Disciplinas">
@@ -94,7 +94,18 @@
                             <TableColumn fx:id="colAgVagas" text="Vagas" prefWidth="80"/>
                         </columns>
                     </TableView>
-                    <Label text="Cadastrar Novo Horário:" style="-fx-font-weight: bold; -fx-padding: 8 0 0 0;"/>
+
+                    <!-- NOVO: Botão para cancelar o horário selecionado na tabela acima -->
+                    <Button text="Cancelar Horário Selecionado" onAction="#handleCancelarSessaoMonitoria"
+                            style="-fx-background-color: #E67E22; -fx-text-fill: white; -fx-background-radius: 5;"/>
+
+                    <Separator style="-fx-padding: 10 0;"/>
+
+                    <Label text="Cadastrar Novo Horário:" style="-fx-font-weight: bold;"/>
+                    <Label fx:id="lblSemVinculo"
+                           text="&#x26A0;  Você não está vinculado a nenhuma disciplina. Solicite ao administrador."
+                           style="-fx-text-fill: #E67E22; -fx-font-style: italic;"
+                           visible="false" managed="false"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <ComboBox fx:id="cbDisciplina" promptText="Disciplina" prefWidth="200"/>
                         <DatePicker fx:id="dpData" promptText="Data" prefWidth="150"/>
@@ -107,8 +118,10 @@
                         <Label text="Vagas:"/>
                         <Spinner fx:id="spVagas" min="1" max="30" initialValue="5" prefWidth="80"/>
                     </HBox>
+
                     <Button text="Cadastrar Horário" onAction="#handleCadastrarAgenda"
                             style="-fx-background-color: #1A6B3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+
                     <Text fx:id="errorMessage" fill="RED" visible="false"/>
                     <Text fx:id="successMessage" fill="GREEN" visible="false"/>
                 </VBox>

@@ -53,6 +53,7 @@ public class MonitorDashBoardController {
     @FXML private TableColumn<Agenda, String> colAgLocal;
     @FXML private TableColumn<Agenda, String> colAgVagas;
     @FXML private ComboBox<Disciplina> cbDisciplina;
+    @FXML private Label lblSemVinculo;
     @FXML private TextField txtLocal;
     @FXML private TextField txtLink;
     @FXML private DatePicker dpData;
@@ -69,6 +70,8 @@ public class MonitorDashBoardController {
     @FXML private TableColumn<Agendamento, String> colAgdStatus;
     @FXML private CheckBox chkPresenca;
     @FXML private TextArea txtConteudo;
+    @FXML private Text errorAtendimento;
+    @FXML private Text successAtendimento;
 
     // --- Aba Relatórios ---
     @FXML private Label lblTotalAtendimentos;
@@ -93,7 +96,6 @@ public class MonitorDashBoardController {
         monitorLogado = (Monitor) SessionManager.getInstance().getUsuarioLogado();
         lblBemVindo.setText("Monitor: " + monitorLogado.getNome());
 
-        // Configurações iniciais de tabelas
         configurarTabelaDisciplinas();
         configurarTabelaAgendar();
         configurarTabelaMeusAgendamentos();
@@ -101,11 +103,9 @@ public class MonitorDashBoardController {
         configurarTabelaAgendamentos();
         configurarTabelaRelatorio();
 
-        // Carregamento inicial (Aba padrão)
         carregarDisciplinas();
         carregarDisciplinasMonitor();
 
-        // Listener para atualizar abas automaticamente ao clicar
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, abaAntiga, novaAba) -> {
             if (novaAba != null) {
                 String titulo = novaAba.getText();
@@ -139,6 +139,8 @@ public class MonitorDashBoardController {
         if (successAgendamento != null) successAgendamento.setVisible(false);
         if (errorMessage != null) errorMessage.setVisible(false);
         if (successMessage != null) successMessage.setVisible(false);
+        if (errorAtendimento != null) errorAtendimento.setVisible(false);
+        if (successAtendimento != null) successAtendimento.setVisible(false);
     }
 
     // ===================== DISCIPLINAS (ALUNO) =====================
@@ -197,7 +199,8 @@ public class MonitorDashBoardController {
     }
 
     private void carregarAgendas() {
-        tabelaAgendas.setItems(FXCollections.observableArrayList(agendaService.listarAgendasDisponiveis()));
+        tabelaAgendas.setItems(FXCollections.observableArrayList(
+                agendaService.listarAgendasDisponiveisPorAluno(monitorLogado.getId())));
     }
 
     @FXML
@@ -218,14 +221,12 @@ public class MonitorDashBoardController {
     // ===================== MEUS AGENDAMENTOS (ALUNO) =====================
 
     private void configurarTabelaMeusAgendamentos() {
-        // Coluna Status: Exibe o Status e a Justificativa (se houver)
         colMeuStatus.setCellValueFactory(c -> {
             Agendamento ag = c.getValue();
             if (ag == null || ag.getStatus() == null) return new SimpleStringProperty("—");
 
             String statusTexto = ag.getStatus().name();
 
-            // Se houver justificativa de cancelamento, anexa ao texto do status
             if (ag.getJustificativa() != null && !ag.getJustificativa().isBlank()) {
                 statusTexto += " (" + ag.getJustificativa() + ")";
             }
@@ -233,19 +234,16 @@ public class MonitorDashBoardController {
             return new SimpleStringProperty(statusTexto);
         });
 
-        // Coluna Assunto: Simples exibição do texto
         colMeuAssunto.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue() != null ? c.getValue().getAssunto() : "—")
         );
 
-        // Coluna Horário: Com proteção total contra erro de "Null value"
         colMeuHorario.setCellValueFactory(c -> {
             if (c.getValue() != null &&
                     c.getValue().getAgenda() != null &&
                     c.getValue().getAgenda().getDataHoraInicio() != null) {
 
                 LocalDateTime inicio = c.getValue().getAgenda().getDataHoraInicio();
-                // Formatação básica para tirar o 'T' que o LocalDateTime coloca entre data e hora
                 return new SimpleStringProperty(inicio.toString().replace("T", " "));
             }
             return new SimpleStringProperty("Horário não definido");
@@ -277,10 +275,18 @@ public class MonitorDashBoardController {
                             monitorLogado.setDisciplinasVinculadas(java.util.List.of(disciplina));
                             if (cbDisciplina != null)
                                 cbDisciplina.setItems(FXCollections.observableArrayList(disciplina));
+                            if (lblSemVinculo != null) {
+                                lblSemVinculo.setVisible(false);
+                                lblSemVinculo.setManaged(false);
+                            }
                         },
                         () -> {
                             monitorLogado.setDisciplinasVinculadas(java.util.List.of());
                             if (cbDisciplina != null) cbDisciplina.getItems().clear();
+                            if (lblSemVinculo != null) {
+                                lblSemVinculo.setVisible(true);
+                                lblSemVinculo.setManaged(true);
+                            }
                         }
                 );
     }
@@ -334,7 +340,6 @@ public class MonitorDashBoardController {
     // ===================== ATENDIMENTOS (MONITOR) =====================
 
     private void configurarTabelaAgendamentos() {
-        // Essa linha é essencial: ela entra no objeto Aluno para pegar o Nome
         colAgdAluno.setCellValueFactory(c -> {
             if (c.getValue().getAluno() != null) {
                 return new SimpleStringProperty(c.getValue().getAluno().getNome());
@@ -356,19 +361,26 @@ public class MonitorDashBoardController {
     @FXML
     public void handleRegistrarAtendimento() {
         Agendamento selecionado = tabelaAgendamentos.getSelectionModel().getSelectedItem();
-        if (selecionado == null) { showError("Selecione um agendamento."); return; }
+        if (selecionado == null) {
+            showErrorAtendimento("Selecione um agendamento.");
+            return;
+        }
         String conteudo = txtConteudo != null ? txtConteudo.getText().trim() : "";
         boolean presenca = chkPresenca != null && chkPresenca.isSelected();
         try {
             agendamentoService.registrarAtendimento(monitorLogado, selecionado, presenca, conteudo);
-            showSuccess("Atendimento registrado!");
+            showSuccessAtendimento("Atendimento registrado com sucesso!");
             carregarAgendamentosParaRegistro();
-        } catch (Exception e) { showError(e.getMessage()); }
+            // Limpa os campos após registro bem-sucedido
+            if (txtConteudo != null) txtConteudo.clear();
+            if (chkPresenca != null) chkPresenca.setSelected(false);
+        } catch (Exception e) {
+            showErrorAtendimento(e.getMessage());
+        }
     }
 
     @FXML
     public void handleCancelarSessaoMonitoria() {
-        // 1. Pega a Agenda selecionada na tabela "Minha Agenda"
         Agenda agendaSelecionada = tabelaMinhasAgendas.getSelectionModel().getSelectedItem();
 
         if (agendaSelecionada == null) {
@@ -376,7 +388,6 @@ public class MonitorDashBoardController {
             return;
         }
 
-        // 2. Pede justificativa (Exigido pela Regra de Negócio no Service)
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Cancelar Sessão de Monitoria");
         dialog.setHeaderText("Você está cancelando este horário para TODOS os alunos.");
@@ -389,10 +400,8 @@ public class MonitorDashBoardController {
             }
 
             try {
-                // 3. Cancela a sessão na tabela agendas (salva justificativa lá)
                 agendaService.cancelarSessao(agendaSelecionada.getId(), justificativa.trim());
 
-                // 4. Cancela cada agendamento vinculado (aluno e professor verão no histórico)
                 List<Agendamento> agendamentosDaSessao = agendamentoService.listarPorAgenda(agendaSelecionada.getId());
                 for (Agendamento ag : agendamentosDaSessao) {
                     agendamentoService.cancelarPeloMonitor(ag, justificativa.trim());
@@ -404,7 +413,6 @@ public class MonitorDashBoardController {
                     showSuccess("Sessão cancelada. Justificativa registrada para " + agendamentosDaSessao.size() + " aluno(s).");
                 }
 
-                // 5. Atualiza a tela
                 carregarMinhasAgendas();
 
             } catch (Exception e) {
@@ -473,5 +481,25 @@ public class MonitorDashBoardController {
     private void showSuccess(String msg) {
         if (successMessage != null) { successMessage.setText(msg); successMessage.setVisible(true); }
         if (errorMessage != null) errorMessage.setVisible(false);
+    }
+
+
+    private void showErrorAtendimento(String msg) {
+        if (errorAtendimento != null) {
+            errorAtendimento.setText(msg);
+            errorAtendimento.setVisible(true);
+            if (successAtendimento != null) successAtendimento.setVisible(false);
+        } else {
+            new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        }
+    }
+    private void showSuccessAtendimento(String msg) {
+        if (successAtendimento != null) {
+            successAtendimento.setText(msg);
+            successAtendimento.setVisible(true);
+            if (errorAtendimento != null) errorAtendimento.setVisible(false);
+        } else {
+            new Alert(Alert.AlertType.INFORMATION, msg, ButtonType.OK).showAndWait();
+        }
     }
 }
