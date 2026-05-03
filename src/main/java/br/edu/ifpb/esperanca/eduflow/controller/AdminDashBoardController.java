@@ -107,6 +107,62 @@ public class AdminDashBoardController {
         Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
         lblBemVindo.setText("Admin: " + (usuario != null ? usuario.getNome() : ""));
 
+        // Colunas se ajustam dinamicamente à largura da tabela
+        tabelaDisciplinas.widthProperty().addListener((obs, oldW, newW) -> {
+            double w = newW.doubleValue();
+            colNome.setPrefWidth(w * 0.50);
+            colCodigo.setPrefWidth(w * 0.25);
+            colSemestre.setPrefWidth(w * 0.25);
+        });
+
+        tabelaUsuarios.widthProperty().addListener((obs, oldW, newW) -> {
+            double w = newW.doubleValue();
+            colUsuarioNome.setPrefWidth(w * 0.30);
+            colUsuarioEmail.setPrefWidth(w * 0.30);
+            colUsuarioMatricula.setPrefWidth(w * 0.15);
+            colUsuarioRole.setPrefWidth(w * 0.15);
+            colUsuarioStatus.setPrefWidth(w * 0.10);
+        });
+
+        tabelaProfessores.widthProperty().addListener((obs, oldW, newW) -> {
+            double w = newW.doubleValue();
+            colProfNome.setPrefWidth(w * 0.35);
+            colProfEmail.setPrefWidth(w * 0.35);
+            colProfMatricula.setPrefWidth(w * 0.20);
+            colProfStatus.setPrefWidth(w * 0.10);
+        });
+
+        tabelaDisciplinasProfessor.widthProperty().addListener((obs, oldW, newW) -> {
+            double w = newW.doubleValue();
+            colDPNome.setPrefWidth(w * 0.50);
+            colDPCodigo.setPrefWidth(w * 0.25);
+            colDPSemestre.setPrefWidth(w * 0.25);
+        });
+
+        tabelaMonitores.widthProperty().addListener((obs, oldW, newW) -> {
+            double w = newW.doubleValue();
+            colMonitorNome.setPrefWidth(w * 0.35);
+            colMonitorEmail.setPrefWidth(w * 0.35);
+            colMonitorMatricula.setPrefWidth(w * 0.20);
+            colMonitorStatus.setPrefWidth(w * 0.10);
+        });
+
+        tabelaDisciplinasMonitor.widthProperty().addListener((obs, oldW, newW) -> {
+            double w = newW.doubleValue();
+            colDMNome.setPrefWidth(w * 0.50);
+            colDMCodigo.setPrefWidth(w * 0.25);
+            colDMSemestre.setPrefWidth(w * 0.25);
+        });
+
+        tabelaAulas.widthProperty().addListener((obs, oldW, newW) -> {
+            double w = newW.doubleValue();
+            colAulaProfessor.setPrefWidth(w * 0.20);
+            colAulaData.setPrefWidth(w * 0.18);
+            colAulaDisciplina.setPrefWidth(w * 0.25);
+            colAulaTipo.setPrefWidth(w * 0.10);
+            colAulaJustificativa.setPrefWidth(w * 0.27);
+        });
+
         configurarTabelaDisciplinas();
         carregarDisciplinas();
 
@@ -121,7 +177,6 @@ public class AdminDashBoardController {
         configurarFormularioAula();
         handleVerTodasAulas();
 
-        // Atualiza botão toggle ao selecionar usuário na aba Usuários
         tabelaUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
                 btnToggleStatus.setText(selected.isAtivo() ? "Desabilitar Conta" : "Habilitar Conta");
@@ -131,17 +186,16 @@ public class AdminDashBoardController {
             }
         });
 
-        // Recarrega combos e tabelas ao trocar de aba
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             int idx = newIndex.intValue();
             List<Disciplina> disciplinas = disciplinaService.listarTodas();
-            if (idx == 2) { // Professores
+            if (idx == 2) {
                 comboDisciplinaVinculo.setItems(FXCollections.observableArrayList(disciplinas));
                 carregarProfessores();
-            } else if (idx == 3) { // Monitores
+            } else if (idx == 3) {
                 comboDisciplinaMonitor.setItems(FXCollections.observableArrayList(disciplinas));
                 carregarMonitores();
-            } else if (idx == 4) { // Calendários
+            } else if (idx == 4) {
                 comboDisciplinaAula.setItems(FXCollections.observableArrayList(disciplinas));
             }
         });
@@ -286,7 +340,6 @@ public class AdminDashBoardController {
             public Disciplina fromString(String s) { return null; }
         });
 
-        // Ao selecionar um professor, carrega suas disciplinas vinculadas
         tabelaProfessores.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected == null) {
                 tabelaDisciplinasProfessor.getItems().clear();
@@ -355,7 +408,6 @@ public class AdminDashBoardController {
             public Disciplina fromString(String s) { return null; }
         });
 
-        // Ao selecionar um monitor, carrega sua disciplina vinculada
         tabelaMonitores.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected == null) {
                 tabelaDisciplinasMonitor.getItems().clear();

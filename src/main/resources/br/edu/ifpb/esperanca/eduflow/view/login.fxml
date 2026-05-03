@@ -1,35 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="br.edu.ifpb.esperanca.eduflow.controller.LoginController"
-      style="-fx-background-color: #F0F4F8;">
-    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/></padding>
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="br.edu.ifpb.esperanca.eduflow.controller.LoginController"
+           styleClass="login-root"
+           stylesheets="@./styles/eduflow.css">
 
-    <Label text="EduFlow" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2A4D69;"/>
-    <Label text="Sistema de Gerenciamento de Monitorias"
-           style="-fx-font-size: 14px; -fx-text-fill: #4A6D89;"/>
+    <VBox alignment="CENTER">
+        <VBox styleClass="login-card" spacing="13">
 
-    <VBox alignment="CENTER_LEFT" spacing="5.0" maxWidth="300">
-        <Label text="E-mail Institucional:" style="-fx-font-size: 14px; -fx-text-fill: #4A6D89;"/>
-        <TextField fx:id="txtEmail" promptText="seu.email@academico.ifpb.edu.br"
-                   style="-fx-font-size: 14px; -fx-background-radius: 5;"/>
+            <VBox alignment="CENTER" spacing="4">
+                <Label text="EduFlow" styleClass="login-logo"/>
+                <Label text="Sistema de Gerenciamento de Monitorias"
+                       styleClass="login-tagline"/>
+            </VBox>
+
+            <Region styleClass="login-divider" maxWidth="Infinity"/>
+
+            <VBox spacing="5">
+                <Label text="E-mail Institucional" styleClass="field-label"/>
+                <TextField fx:id="txtEmail"
+                           promptText="seu.email@academico.ifpb.edu.br"
+                           styleClass="text-field"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Senha" styleClass="field-label"/>
+                <PasswordField fx:id="txtSenha"
+                               promptText="Sua senha"
+                               styleClass="password-field"/>
+            </VBox>
+
+            <Text fx:id="errorMessage" styleClass="label-error" visible="false"/>
+
+            <Button fx:id="btnLogin" text="Entrar"
+                    onAction="#handleLogin"
+                    defaultButton="true"
+                    styleClass="btn-primary"
+                    maxWidth="Infinity">
+                <VBox.margin><Insets top="4"/></VBox.margin>
+            </Button>
+
+            <HBox alignment="CENTER">
+                <Hyperlink text="Não tem conta? Cadastre-se"
+                           onAction="#handleIrParaCadastro"
+                           styleClass="hyperlink"/>
+            </HBox>
+
+        </VBox>
     </VBox>
-
-    <VBox alignment="CENTER_LEFT" spacing="5.0" maxWidth="300">
-        <Label text="Senha:" style="-fx-font-size: 14px; -fx-text-fill: #4A6D89;"/>
-        <PasswordField fx:id="txtSenha" promptText="Sua senha"
-                       style="-fx-font-size: 14px; -fx-background-radius: 5;"/>
-    </VBox>
-
-    <Button fx:id="btnLogin" onAction="#handleLogin" text="Entrar" defaultButton="true"
-            style="-fx-background-color: #2A4D69; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 5; -fx-min-width: 200;"/>
-
-    <Hyperlink text="Não tem conta? Cadastre-se" onAction="#handleIrParaCadastro"
-               style="-fx-text-fill: #2A4D69;"/>
-
-    <Text fx:id="errorMessage" fill="RED" visible="false"/>
-</VBox>
+</StackPane>

@@ -6,93 +6,123 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="br.edu.ifpb.esperanca.eduflow.controller.AlunoDashBoardController"
-            style="-fx-background-color: #F0F4F8;">
+            styleClass="dashboard-root"
+            stylesheets="@./styles/eduflow.css">
 
-    <!-- Topo -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2A4D69; -fx-padding: 15;">
-            <Label fx:id="lblBemVindo" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <HBox HBox.hgrow="ALWAYS"/>
-            <Button text="Sair" onAction="#handleLogout"
-                    style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <HBox styleClass="topbar, topbar-aluno" alignment="CENTER_LEFT" spacing="12">
+            <VBox>
+                <Label text="EduFlow" styleClass="topbar-title"/>
+                <Label text="Painel do Aluno" styleClass="topbar-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblBemVindo" styleClass="user-badge"/>
+            <Button text="Sair" onAction="#handleLogout" styleClass="btn-sair"/>
         </HBox>
     </top>
 
-    <!-- Centro -->
     <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
+        <VBox styleClass="content-area" VBox.vgrow="ALWAYS">
+            <TabPane tabClosingPolicy="UNAVAILABLE"
+                     styleClass="main-container" VBox.vgrow="ALWAYS">
 
-            <!-- Aba 1: Minhas Disciplinas -->
-            <Tab text="Minhas Disciplinas">
-                <VBox spacing="10" style="-fx-padding: 15;">
-                    <Label text="Minhas Disciplinas" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                <!-- Aba 1: Minhas Disciplinas -->
+                <Tab text="Minhas Disciplinas">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="16" style="-fx-padding: 20;">
 
-                    <!-- Disciplinas matriculadas -->
-                    <Label text="Matriculado em:" style="-fx-font-weight: bold; -fx-text-fill: #27AE60;"/>
-                    <TableView fx:id="tabelaMatriculadas" prefHeight="180" VBox.vgrow="ALWAYS">
-                        <columns>
-                            <TableColumn fx:id="colMatNome" text="Disciplina" prefWidth="260"/>
-                            <TableColumn fx:id="colMatCodigo" text="Código" prefWidth="120"/>
-                            <TableColumn fx:id="colMatSemestre" text="Semestre" prefWidth="120"/>
-                        </columns>
-                    </TableView>
-                    <Button text="Cancelar Matrícula Selecionada" onAction="#handleCancelarMatricula"
-                            style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                            <Label text="▸  Matriculado em" styleClass="label-section"/>
+                            <TableView fx:id="tabelaMatriculadas" prefHeight="180"
+                                       styleClass="table-view">
+                                <columns>
+                                    <TableColumn fx:id="colMatNome"     text="Disciplina" prefWidth="260"/>
+                                    <TableColumn fx:id="colMatCodigo"   text="Código"     prefWidth="120"/>
+                                    <TableColumn fx:id="colMatSemestre" text="Semestre"   prefWidth="120"/>
+                                </columns>
+                            </TableView>
+                            <HBox>
+                                <Button text="Cancelar Matrícula Selecionada"
+                                        onAction="#handleCancelarMatricula"
+                                        styleClass="btn-danger"/>
+                            </HBox>
 
-                    <!-- Disciplinas disponíveis -->
-                    <Label text="Disciplinas disponíveis:" style="-fx-font-weight: bold; -fx-text-fill: #2980B9;"/>
-                    <TableView fx:id="tabelaDisponiveis" prefHeight="180" VBox.vgrow="ALWAYS">
-                        <columns>
-                            <TableColumn fx:id="colDispNome" text="Disciplina" prefWidth="260"/>
-                            <TableColumn fx:id="colDispCodigo" text="Código" prefWidth="120"/>
-                            <TableColumn fx:id="colDispSemestre" text="Semestre" prefWidth="120"/>
-                        </columns>
-                    </TableView>
-                    <Button text="Matricular na Disciplina Selecionada" onAction="#handleMatricular"
-                            style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                            <Label text="▸  Disciplinas disponíveis" styleClass="label-section"/>
+                            <TableView fx:id="tabelaDisponiveis" prefHeight="180"
+                                       styleClass="table-view">
+                                <columns>
+                                    <TableColumn fx:id="colDispNome"     text="Disciplina" prefWidth="260"/>
+                                    <TableColumn fx:id="colDispCodigo"   text="Código"     prefWidth="120"/>
+                                    <TableColumn fx:id="colDispSemestre" text="Semestre"   prefWidth="120"/>
+                                </columns>
+                            </TableView>
+                            <HBox>
+                                <Button text="Matricular na Disciplina Selecionada"
+                                        onAction="#handleMatricular"
+                                        styleClass="btn-accent"/>
+                            </HBox>
 
-                    <Text fx:id="errorDisciplina" fill="RED" visible="false"/>
-                    <Text fx:id="successDisciplina" fill="GREEN" visible="false"/>
-                </VBox>
-            </Tab>
+                            <Text fx:id="errorDisciplina"   styleClass="label-error"   visible="false"/>
+                            <Text fx:id="successDisciplina" styleClass="label-success" visible="false"/>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-            <!-- Aba 2: Agendar -->
-            <Tab text="Agendar Monitoria">
-                <VBox spacing="10" style="-fx-padding: 15;">
-                    <Label text="Horários disponíveis:" style="-fx-font-weight: bold;"/>
-                    <TableView fx:id="tabelaAgendas" prefHeight="250">
-                        <columns>
-                            <TableColumn fx:id="colDisciplina" text="Disciplina" prefWidth="180"/>
-                            <TableColumn fx:id="colHorario" text="Horário" prefWidth="280"/>
-                            <TableColumn fx:id="colLocal" text="Local / Link" prefWidth="200"/>
-                            <TableColumn fx:id="colVagas" text="Vagas" prefWidth="80"/>
-                        </columns>
-                    </TableView>
-                    <Label text="Assunto / Dúvida:" style="-fx-font-weight: bold;"/>
-                    <TextArea fx:id="txtAssunto" promptText="Descreva sua dúvida..." prefHeight="80"/>
-                    <Button text="Confirmar Agendamento" onAction="#handleAgendar"
-                            style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    <Text fx:id="errorMessage" fill="RED" visible="false"/>
-                    <Text fx:id="successMessage" fill="GREEN" visible="false"/>
-                </VBox>
-            </Tab>
+                <!-- Aba 2: Agendar Monitoria -->
+                <Tab text="Agendar Monitoria">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="12" style="-fx-padding: 20;">
+                            <Label text="▸  Horários disponíveis" styleClass="label-section"/>
+                            <TableView fx:id="tabelaAgendas" prefHeight="240"
+                                       styleClass="table-view">
+                                <columns>
+                                    <TableColumn fx:id="colDisciplina" text="Disciplina"  prefWidth="180"/>
+                                    <TableColumn fx:id="colHorario"   text="Horário"     prefWidth="260"/>
+                                    <TableColumn fx:id="colLocal"     text="Local / Link" prefWidth="200"/>
+                                    <TableColumn fx:id="colVagas"     text="Vagas"       prefWidth="80"/>
+                                </columns>
+                            </TableView>
+                            <VBox spacing="5">
+                                <Label text="Assunto / Dúvida" styleClass="field-label"/>
+                                <TextArea fx:id="txtAssunto"
+                                          promptText="Descreva sua dúvida..."
+                                          prefHeight="80"
+                                          styleClass="text-area"/>
+                            </VBox>
+                            <HBox>
+                                <Button text="Confirmar Agendamento"
+                                        onAction="#handleAgendar"
+                                        styleClass="btn-accent"/>
+                            </HBox>
+                            <Text fx:id="errorMessage"   styleClass="label-error"   visible="false"/>
+                            <Text fx:id="successMessage" styleClass="label-success" visible="false"/>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-            <!-- Aba 3: Meus Agendamentos -->
-            <Tab text="Meus Agendamentos">
-                <VBox spacing="10" style="-fx-padding: 15;">
-                    <TableView fx:id="tabelaMeusAgendamentos" prefHeight="300">
-                        <columns>
-                            <TableColumn fx:id="colMeuStatus" text="Status" prefWidth="130"/>
-                            <TableColumn fx:id="colMeuAssunto" text="Assunto" prefWidth="220"/>
-                            <TableColumn fx:id="colMeuHorario" text="Horário" prefWidth="160"/>
-                            <TableColumn fx:id="colMeuJustificativa" text="Justificativa do Cancelamento" prefWidth="240"/>
-                        </columns>
-                    </TableView>
-                    <Button text="Cancelar Agendamento Selecionado" onAction="#handleCancelarAgendamento"
-                            style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                </VBox>
-            </Tab>
+                <!-- Aba 3: Meus Agendamentos -->
+                <Tab text="Meus Agendamentos">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="12" style="-fx-padding: 20;">
+                            <Label text="▸  Histórico de agendamentos" styleClass="label-section"/>
+                            <TableView fx:id="tabelaMeusAgendamentos" prefHeight="300"
+                                       styleClass="table-view">
+                                <columns>
+                                    <TableColumn fx:id="colMeuStatus"        text="Status"                       prefWidth="130"/>
+                                    <TableColumn fx:id="colMeuAssunto"       text="Assunto"                      prefWidth="220"/>
+                                    <TableColumn fx:id="colMeuHorario"       text="Horário"                      prefWidth="160"/>
+                                    <TableColumn fx:id="colMeuJustificativa" text="Justificativa do Cancelamento" prefWidth="240"/>
+                                </columns>
+                            </TableView>
+                            <HBox>
+                                <Button text="Cancelar Agendamento Selecionado"
+                                        onAction="#handleCancelarAgendamento"
+                                        styleClass="btn-danger"/>
+                            </HBox>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-        </TabPane>
+            </TabPane>
+        </VBox>
     </center>
 </BorderPane>

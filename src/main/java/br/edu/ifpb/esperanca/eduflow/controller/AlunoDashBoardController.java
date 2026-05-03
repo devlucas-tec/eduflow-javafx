@@ -55,6 +55,11 @@ public class AlunoDashBoardController {
         alunoLogado = (Aluno) SessionManager.getInstance().getUsuarioLogado();
         lblBemVindo.setText("Olá, " + alunoLogado.getNome() + "!");
 
+        tabelaMatriculadas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaDisponiveis.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaAgendas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaMeusAgendamentos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         configurarTabelaDisciplinas();
         carregarDisciplinas();
 

@@ -81,6 +81,12 @@ public class ProfessorDashboardController {
         professorLogado = (Professor) SessionManager.getInstance().getUsuarioLogado();
         lblBemVindo.setText("Prof. " + professorLogado.getNome());
 
+        tabelaDisciplinas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaMinhasAulas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaParaValidar.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaAgendasMonitor.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaAgendamentosMonitor.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         configurarTabelaDisciplinas();
         carregarDisciplinas();
 

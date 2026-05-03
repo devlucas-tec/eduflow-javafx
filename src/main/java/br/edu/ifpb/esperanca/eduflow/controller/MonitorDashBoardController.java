@@ -96,6 +96,14 @@ public class MonitorDashBoardController {
         monitorLogado = (Monitor) SessionManager.getInstance().getUsuarioLogado();
         lblBemVindo.setText("Monitor: " + monitorLogado.getNome());
 
+        tabelaMatriculadas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaDisponiveis.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaAgendas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaMeusAgendamentos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaMinhasAgendas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaAgendamentos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaRelatorio.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         configurarTabelaDisciplinas();
         configurarTabelaAgendar();
         configurarTabelaMeusAgendamentos();

@@ -6,221 +6,332 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="br.edu.ifpb.esperanca.eduflow.controller.AdminDashBoardController"
-            style="-fx-background-color: #F0F4F8;">
+            styleClass="dashboard-root"
+            stylesheets="@./styles/eduflow.css">
+
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2C3E50; -fx-padding: 15;">
-            <Label fx:id="lblBemVindo" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <HBox HBox.hgrow="ALWAYS"/>
-            <Button text="Sair" onAction="#handleLogout"
-                    style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <HBox styleClass="topbar, topbar-admin" alignment="CENTER_LEFT" spacing="12">
+            <VBox>
+                <Label text="EduFlow" styleClass="topbar-title"/>
+                <Label text="Painel Administrativo" styleClass="topbar-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblBemVindo" styleClass="user-badge"/>
+            <Button text="Sair" onAction="#handleLogout" styleClass="btn-sair"/>
         </HBox>
     </top>
+
     <center>
-        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 10;">
+        <VBox styleClass="content-area" VBox.vgrow="ALWAYS">
+            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE"
+                     styleClass="main-container" VBox.vgrow="ALWAYS">
 
-            <!-- ABA 1: Disciplinas -->
-            <Tab text="Disciplinas">
-                <VBox spacing="10" style="-fx-padding: 15;">
-                    <Label text="Catálogo de Disciplinas" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
-                    <TableView fx:id="tabelaDisciplinas" prefHeight="300" VBox.vgrow="ALWAYS">
-                        <columns>
-                            <TableColumn fx:id="colNome" text="Nome" prefWidth="250"/>
-                            <TableColumn fx:id="colCodigo" text="Código" prefWidth="120"/>
-                            <TableColumn fx:id="colSemestre" text="Semestre" prefWidth="120"/>
-                        </columns>
-                    </TableView>
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="txtNomeDisciplina" promptText="Nome da disciplina" prefWidth="220"/>
-                        <TextField fx:id="txtCodigoDisciplina" promptText="Código (ex: APS101)" prefWidth="140"/>
-                        <TextField fx:id="txtSemestreDisciplina" promptText="Semestre (ex: 2026.1)" prefWidth="140"/>
-                        <Button text="Cadastrar" onAction="#handleCadastrarDisciplina"
-                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Excluir Selecionada" onAction="#handleExcluirDisciplina"
-                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    </HBox>
-                    <Text fx:id="errorMessage" fill="RED" visible="false"/>
-                    <Text fx:id="successMessage" fill="GREEN" visible="false"/>
-                </VBox>
-            </Tab>
+                <!-- Aba 1: Disciplinas -->
 
-            <!-- ABA 2: Usuários -->
-            <Tab text="Usuários">
-                <VBox spacing="10" style="-fx-padding: 15;">
-                    <Label text="Gerenciamento de Usuários" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                <Tab text="Disciplinas">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="16" style="-fx-padding: 20;">
 
-                    <!-- Filtros -->
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Filtrar por Role:"/>
-                        <ComboBox fx:id="filtroRole" prefWidth="150"/>
-                        <Label text="Status:"/>
-                        <ComboBox fx:id="filtroStatus" prefWidth="120"/>
-                        <Button text="Filtrar" onAction="#handleFiltrarUsuarios"
-                                style="-fx-background-color: #2980B9; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Limpar" onAction="#handleLimparFiltros"
-                                style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    </HBox>
+                            <!-- Card: Catálogo -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Catálogo de disciplinas" styleClass="label-section"/>
+                                <TableView fx:id="tabelaDisciplinas" prefHeight="280" styleClass="table-view">
+                                    <columns>
+                                        <TableColumn fx:id="colNome"     text="Nome"     prefWidth="250"/>
+                                        <TableColumn fx:id="colCodigo"   text="Código"   prefWidth="120"/>
+                                        <TableColumn fx:id="colSemestre" text="Semestre" prefWidth="120"/>
+                                    </columns>
+                                </TableView>
+                            </VBox>
 
-                    <!-- Tabela de usuários -->
-                    <TableView fx:id="tabelaUsuarios" VBox.vgrow="ALWAYS" prefHeight="380">
-                        <columns>
-                            <TableColumn fx:id="colUsuarioNome" text="Nome" prefWidth="180"/>
-                            <TableColumn fx:id="colUsuarioEmail" text="E-mail" prefWidth="200"/>
-                            <TableColumn fx:id="colUsuarioMatricula" text="Matrícula" prefWidth="100"/>
-                            <TableColumn fx:id="colUsuarioRole" text="Role" prefWidth="120"/>
-                            <TableColumn fx:id="colUsuarioStatus" text="Status" prefWidth="80"/>
-                        </columns>
-                    </TableView>
+                            <!-- Card: Cadastrar nova disciplina -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Cadastrar nova disciplina" styleClass="label-section"/>
+                                <HBox spacing="12" alignment="CENTER_LEFT">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Nome" styleClass="field-label"/>
+                                        <TextField fx:id="txtNomeDisciplina" promptText="Nome da disciplina"
+                                                   styleClass="text-field"/>
+                                    </VBox>
+                                    <VBox spacing="5">
+                                        <Label text="Código" styleClass="field-label"/>
+                                        <TextField fx:id="txtCodigoDisciplina" promptText="Ex: APS101"
+                                                   prefWidth="140" styleClass="text-field"/>
+                                    </VBox>
+                                    <VBox spacing="5">
+                                        <Label text="Semestre" styleClass="field-label"/>
+                                        <TextField fx:id="txtSemestreDisciplina" promptText="Ex: 2026.1"
+                                                   prefWidth="130" styleClass="text-field"/>
+                                    </VBox>
+                                    <VBox spacing="5" alignment="BOTTOM_LEFT">
+                                        <Label text=" " styleClass="field-label"/>
+                                        <HBox spacing="8">
+                                            <Button text="Cadastrar"
+                                                    onAction="#handleCadastrarDisciplina"
+                                                    styleClass="btn-accent"/>
+                                            <Button text="Excluir Selecionada"
+                                                    onAction="#handleExcluirDisciplina"
+                                                    styleClass="btn-danger"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                                <Text fx:id="errorMessage"   styleClass="label-error"   visible="false"/>
+                                <Text fx:id="successMessage" styleClass="label-success" visible="false"/>
+                            </VBox>
 
-                    <!-- Ações -->
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Alterar Role:"/>
-                        <ComboBox fx:id="novoRole" prefWidth="160"/>
-                        <Button text="Aplicar Role" onAction="#handleAlterarRole"
-                                style="-fx-background-color: #8E44AD; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="btnToggleStatus" text="Desabilitar Conta" onAction="#handleToggleStatus"
-                                style="-fx-background-color: #E67E22; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    </HBox>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-                    <Text fx:id="errorUsuario" fill="RED" visible="false"/>
-                    <Text fx:id="successUsuario" fill="GREEN" visible="false"/>
-                </VBox>
-            </Tab>
+                <!-- Aba 2: Usuários -->
+                <Tab text="Usuários">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="16" style="-fx-padding: 20;">
 
-            <!-- ABA 3: Professores -->
-            <Tab text="Professores">
-                <VBox spacing="12" style="-fx-padding: 15;">
-                    <Label text="Vínculo Professor ↔ Disciplina" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                            <!-- Card: Filtros -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Filtrar usuários" styleClass="label-section"/>
+                                <HBox spacing="12" alignment="CENTER_LEFT">
+                                    <VBox spacing="5">
+                                        <Label text="Perfil" styleClass="field-label"/>
+                                        <ComboBox fx:id="filtroRole" prefWidth="160" styleClass="combo-box"/>
+                                    </VBox>
+                                    <VBox spacing="5">
+                                        <Label text="Status" styleClass="field-label"/>
+                                        <ComboBox fx:id="filtroStatus" prefWidth="140" styleClass="combo-box"/>
+                                    </VBox>
+                                    <VBox spacing="5" alignment="BOTTOM_LEFT">
+                                        <Label text=" " styleClass="field-label"/>
+                                        <HBox spacing="8">
+                                            <Button text="Filtrar"  onAction="#handleFiltrarUsuarios" styleClass="btn-primary"/>
+                                            <Button text="Limpar"   onAction="#handleLimparFiltros"   styleClass="btn-secondary"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
 
-                    <!-- Tabela de professores -->
-                    <Label text="Selecione um professor:" style="-fx-font-weight: bold;"/>
-                    <TableView fx:id="tabelaProfessores" prefHeight="220" VBox.vgrow="NEVER">
-                        <columns>
-                            <TableColumn fx:id="colProfNome" text="Nome" prefWidth="220"/>
-                            <TableColumn fx:id="colProfEmail" text="E-mail" prefWidth="220"/>
-                            <TableColumn fx:id="colProfMatricula" text="Matrícula" prefWidth="120"/>
-                            <TableColumn fx:id="colProfStatus" text="Status" prefWidth="80"/>
-                        </columns>
-                    </TableView>
+                            <!-- Card: Lista + ações -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Lista de usuários" styleClass="label-section"/>
+                                <TableView fx:id="tabelaUsuarios" VBox.vgrow="ALWAYS" styleClass="table-view">
+                                    <columns>
+                                        <TableColumn fx:id="colUsuarioNome"      text="Nome"      prefWidth="180"/>
+                                        <TableColumn fx:id="colUsuarioEmail"     text="E-mail"    prefWidth="200"/>
+                                        <TableColumn fx:id="colUsuarioMatricula" text="Matrícula" prefWidth="100"/>
+                                        <TableColumn fx:id="colUsuarioRole"      text="Perfil"    prefWidth="120"/>
+                                        <TableColumn fx:id="colUsuarioStatus"    text="Status"    prefWidth="90"/>
+                                    </columns>
+                                </TableView>
 
-                    <Separator/>
+                                <HBox spacing="20" alignment="TOP_LEFT">
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="▸  Alterar perfil do usuário selecionado" styleClass="label-section"/>
+                                        <HBox spacing="10" alignment="CENTER_LEFT">
+                                            <VBox spacing="5">
+                                                <Label text="Novo perfil" styleClass="field-label"/>
+                                                <ComboBox fx:id="novoRole" prefWidth="180" styleClass="combo-box"/>
+                                            </VBox>
+                                            <VBox spacing="5" alignment="BOTTOM_LEFT">
+                                                <Label text=" " styleClass="field-label"/>
+                                                <Button text="Aplicar Perfil"
+                                                        onAction="#handleAlterarRole"
+                                                        styleClass="btn-primary"/>
+                                            </VBox>
+                                        </HBox>
+                                    </VBox>
+                                    <VBox spacing="8">
+                                        <Label text="▸  Status da conta" styleClass="label-section"/>
+                                        <VBox spacing="5" alignment="BOTTOM_LEFT">
+                                            <Label text=" " styleClass="field-label"/>
+                                            <Button fx:id="btnToggleStatus"
+                                                    text="Habilitar / Desabilitar"
+                                                    onAction="#handleToggleStatus"
+                                                    styleClass="btn-danger"/>
+                                        </VBox>
+                                    </VBox>
+                                </HBox>
+                                <Text fx:id="errorUsuario"   styleClass="label-error"   visible="false"/>
+                                <Text fx:id="successUsuario" styleClass="label-success" visible="false"/>
+                            </VBox>
 
-                    <!-- Vincular disciplina -->
-                    <Label text="Disciplinas vinculadas ao professor selecionado:" style="-fx-font-weight: bold;"/>
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Disciplina:"/>
-                        <ComboBox fx:id="comboDisciplinaVinculo" prefWidth="280"/>
-                        <Button text="Vincular" onAction="#handleVincularDisciplina"
-                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Desvincular Selecionada" onAction="#handleDesvincularDisciplina"
-                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    </HBox>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-                    <TableView fx:id="tabelaDisciplinasProfessor" VBox.vgrow="ALWAYS" prefHeight="200">
-                        <columns>
-                            <TableColumn fx:id="colDPNome" text="Disciplina" prefWidth="280"/>
-                            <TableColumn fx:id="colDPCodigo" text="Código" prefWidth="130"/>
-                            <TableColumn fx:id="colDPSemestre" text="Semestre" prefWidth="130"/>
-                        </columns>
-                    </TableView>
+                <!-- Aba 3: Professores -->
+                <Tab text="Professores">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="16" style="-fx-padding: 20;">
 
-                    <Text fx:id="errorProfessor" fill="RED" visible="false"/>
-                    <Text fx:id="successProfessor" fill="GREEN" visible="false"/>
-                </VBox>
-            </Tab>
+                            <!-- Card: Lista de professores -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Vínculo Professor ↔ Disciplina" styleClass="label-section"/>
+                                <Label text="Selecione um professor:" styleClass="field-label"/>
+                                <TableView fx:id="tabelaProfessores" prefHeight="200" styleClass="table-view">
+                                    <columns>
+                                        <TableColumn fx:id="colProfNome"      text="Nome"      prefWidth="220"/>
+                                        <TableColumn fx:id="colProfEmail"     text="E-mail"    prefWidth="220"/>
+                                        <TableColumn fx:id="colProfMatricula" text="Matrícula" prefWidth="120"/>
+                                        <TableColumn fx:id="colProfStatus"    text="Status"    prefWidth="80"/>
+                                    </columns>
+                                </TableView>
+                            </VBox>
 
-            <!-- ABA 4: Monitores -->
-            <Tab text="Monitores">
-                <VBox spacing="12" style="-fx-padding: 15;">
-                    <Label text="Vínculo Monitor ↔ Disciplina" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                            <!-- Card: Vínculo disciplinas -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Disciplinas vinculadas ao professor selecionado" styleClass="label-section"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Disciplina" styleClass="field-label"/>
+                                        <ComboBox fx:id="comboDisciplinaVinculo"
+                                                  maxWidth="Infinity" styleClass="combo-box"/>
+                                    </VBox>
+                                    <VBox spacing="5" alignment="BOTTOM_LEFT">
+                                        <Label text=" " styleClass="field-label"/>
+                                        <HBox spacing="8">
+                                            <Button text="Vincular"             onAction="#handleVincularDisciplina"  styleClass="btn-accent"/>
+                                            <Button text="Desvincular Selecionada" onAction="#handleDesvincularDisciplina" styleClass="btn-danger"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                                <TableView fx:id="tabelaDisciplinasProfessor" prefHeight="180" styleClass="table-view">
+                                    <columns>
+                                        <TableColumn fx:id="colDPNome"     text="Disciplina" prefWidth="280"/>
+                                        <TableColumn fx:id="colDPCodigo"   text="Código"     prefWidth="130"/>
+                                        <TableColumn fx:id="colDPSemestre" text="Semestre"   prefWidth="130"/>
+                                    </columns>
+                                </TableView>
+                                <Text fx:id="errorProfessor"   styleClass="label-error"   visible="false"/>
+                                <Text fx:id="successProfessor" styleClass="label-success" visible="false"/>
+                            </VBox>
 
-                    <!-- Tabela de monitores -->
-                    <Label text="Selecione um monitor:" style="-fx-font-weight: bold;"/>
-                    <TableView fx:id="tabelaMonitores" prefHeight="220" VBox.vgrow="NEVER">
-                        <columns>
-                            <TableColumn fx:id="colMonitorNome" text="Nome" prefWidth="220"/>
-                            <TableColumn fx:id="colMonitorEmail" text="E-mail" prefWidth="220"/>
-                            <TableColumn fx:id="colMonitorMatricula" text="Matrícula" prefWidth="120"/>
-                            <TableColumn fx:id="colMonitorStatus" text="Status" prefWidth="80"/>
-                        </columns>
-                    </TableView>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-                    <Separator/>
+                <!-- Aba 4: Monitores -->
+                <Tab text="Monitores">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="16" style="-fx-padding: 20;">
 
-                    <!-- Vincular disciplina -->
-                    <Label text="Disciplina vinculada ao monitor selecionado (máx. 1):" style="-fx-font-weight: bold;"/>
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Disciplina:"/>
-                        <ComboBox fx:id="comboDisciplinaMonitor" prefWidth="280"/>
-                        <Button text="Vincular" onAction="#handleVincularMonitor"
-                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Desvincular" onAction="#handleDesvincularMonitor"
-                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    </HBox>
+                            <!-- Card: Lista de monitores -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Vínculo Monitor ↔ Disciplina" styleClass="label-section"/>
+                                <Label text="Selecione um monitor:" styleClass="field-label"/>
+                                <TableView fx:id="tabelaMonitores" prefHeight="200" styleClass="table-view">
+                                    <columns>
+                                        <TableColumn fx:id="colMonitorNome"      text="Nome"      prefWidth="220"/>
+                                        <TableColumn fx:id="colMonitorEmail"     text="E-mail"    prefWidth="220"/>
+                                        <TableColumn fx:id="colMonitorMatricula" text="Matrícula" prefWidth="120"/>
+                                        <TableColumn fx:id="colMonitorStatus"    text="Status"    prefWidth="80"/>
+                                    </columns>
+                                </TableView>
+                            </VBox>
 
-                    <TableView fx:id="tabelaDisciplinasMonitor" VBox.vgrow="ALWAYS" prefHeight="200">
-                        <columns>
-                            <TableColumn fx:id="colDMNome" text="Disciplina" prefWidth="280"/>
-                            <TableColumn fx:id="colDMCodigo" text="Código" prefWidth="130"/>
-                            <TableColumn fx:id="colDMSemestre" text="Semestre" prefWidth="130"/>
-                        </columns>
-                    </TableView>
+                            <!-- Card: Vínculo disciplina -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Disciplina vinculada ao monitor (máx. 1)" styleClass="label-section"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Disciplina" styleClass="field-label"/>
+                                        <ComboBox fx:id="comboDisciplinaMonitor"
+                                                  maxWidth="Infinity" styleClass="combo-box"/>
+                                    </VBox>
+                                    <VBox spacing="5" alignment="BOTTOM_LEFT">
+                                        <Label text=" " styleClass="field-label"/>
+                                        <HBox spacing="8">
+                                            <Button text="Vincular"    onAction="#handleVincularMonitor"   styleClass="btn-accent"/>
+                                            <Button text="Desvincular" onAction="#handleDesvincularMonitor" styleClass="btn-danger"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                                <TableView fx:id="tabelaDisciplinasMonitor" prefHeight="180" styleClass="table-view" >
+                                    <columns>
+                                        <TableColumn fx:id="colDMNome"     text="Disciplina" prefWidth="280"/>
+                                        <TableColumn fx:id="colDMCodigo"   text="Código"     prefWidth="130"/>
+                                        <TableColumn fx:id="colDMSemestre" text="Semestre"   prefWidth="130"/>
+                                    </columns>
+                                </TableView>
+                                <Text fx:id="errorMonitor"   styleClass="label-error"   visible="false"/>
+                                <Text fx:id="successMonitor" styleClass="label-success" visible="false"/>
+                            </VBox>
 
-                    <Text fx:id="errorMonitor" fill="RED" visible="false"/>
-                    <Text fx:id="successMonitor" fill="GREEN" visible="false"/>
-                </VBox>
-            </Tab>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-            <!-- ABA 5: Calendários de Professores -->
-            <Tab text="Calendários">
-                <VBox spacing="10" style="-fx-padding: 15;">
-                    <Label text="Calendários de Aula dos Professores" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                <!-- Aba 5: Calendários -->
+                <Tab text="Calendários">
+                    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+                        <VBox spacing="16" style="-fx-padding: 20;">
 
-                    <!-- Seleção de professor -->
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Professor:"/>
-                        <ComboBox fx:id="comboProfessor" prefWidth="220"/>
-                        <Button text="Ver Calendário" onAction="#handleCarregarCalendario"
-                                style="-fx-background-color: #2980B9; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Ver Todos" onAction="#handleVerTodasAulas"
-                                style="-fx-background-color: #7F8C8D; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    </HBox>
+                            <!-- Card: Filtro + tabela de aulas -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Filtrar por professor" styleClass="label-section"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Professor" styleClass="field-label"/>
+                                        <ComboBox fx:id="comboProfessor" maxWidth="Infinity" styleClass="combo-box"/>
+                                    </VBox>
+                                    <VBox spacing="5" alignment="BOTTOM_LEFT">
+                                        <Label text=" " styleClass="field-label"/>
+                                        <HBox spacing="8">
+                                            <Button text="Ver Calendário" onAction="#handleCarregarCalendario" styleClass="btn-primary"/>
+                                            <Button text="Ver Todos"      onAction="#handleVerTodasAulas"      styleClass="btn-secondary"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
 
-                    <!-- Tabela de aulas -->
-                    <TableView fx:id="tabelaAulas" VBox.vgrow="ALWAYS" prefHeight="250">
-                        <columns>
-                            <TableColumn fx:id="colAulaProfessor" text="Professor" prefWidth="150"/>
-                            <TableColumn fx:id="colAulaData" text="Data/Hora" prefWidth="150"/>
-                            <TableColumn fx:id="colAulaDisciplina" text="Disciplina" prefWidth="160"/>
-                            <TableColumn fx:id="colAulaTipo" text="Tipo" prefWidth="90"/>
-                            <TableColumn fx:id="colAulaJustificativa" text="Justificativa" prefWidth="220"/>
-                        </columns>
-                    </TableView>
+                                <Label text="▸  Aulas cadastradas" styleClass="label-section"/>
+                                <TableView fx:id="tabelaAulas" prefHeight="220" styleClass="table-view">
+                                    <columns>
+                                        <TableColumn fx:id="colAulaProfessor"    text="Professor"    prefWidth="150"/>
+                                        <TableColumn fx:id="colAulaData"         text="Data/Hora"    prefWidth="150"/>
+                                        <TableColumn fx:id="colAulaDisciplina"   text="Disciplina"   prefWidth="160"/>
+                                        <TableColumn fx:id="colAulaTipo"         text="Tipo"         prefWidth="90"/>
+                                        <TableColumn fx:id="colAulaJustificativa" text="Justificativa" prefWidth="220"/>
+                                    </columns>
+                                </TableView>
+                            </VBox>
 
-                    <!-- Formulário para adicionar/editar aula -->
-                    <Label text="Adicionar / Editar Aula:" style="-fx-font-weight: bold;"/>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <TextField fx:id="txtAulaData" promptText="Data (dd/MM/yyyy HH:mm)" prefWidth="175"/>
-                        <ComboBox fx:id="comboTipoAula" prefWidth="120"/>
-                        <ComboBox fx:id="comboDisciplinaAula" prefWidth="180"/>
-                        <TextField fx:id="txtJustificativa" promptText="Justificativa (opcional)" prefWidth="200"/>
-                    </HBox>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Button text="Adicionar Aula" onAction="#handleAdicionarAula"
-                                style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Editar Selecionada" onAction="#handleEditarAula"
-                                style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Remover Selecionada" onAction="#handleRemoverAula"
-                                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                        <Button text="Limpar Seleção" onAction="#handleLimparSelecaoAula"
-                                style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-background-radius: 5;"/>
-                    </HBox>
+                            <!-- Card: Adicionar / Editar aula -->
+                            <VBox spacing="10" styleClass="section-card">
+                                <Label text="▸  Adicionar / Editar aula" styleClass="label-section"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <VBox spacing="5">
+                                        <Label text="Data e Hora" styleClass="field-label"/>
+                                        <TextField fx:id="txtAulaData" promptText="dd/MM/yyyy HH:mm"
+                                                   prefWidth="160" styleClass="text-field"/>
+                                    </VBox>
+                                    <VBox spacing="5">
+                                        <Label text="Tipo" styleClass="field-label"/>
+                                        <ComboBox fx:id="comboTipoAula" prefWidth="130" styleClass="combo-box"/>
+                                    </VBox>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Disciplina" styleClass="field-label"/>
+                                        <ComboBox fx:id="comboDisciplinaAula" maxWidth="Infinity" styleClass="combo-box"/>
+                                    </VBox>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Justificativa (opcional)" styleClass="field-label"/>
+                                        <TextField fx:id="txtJustificativa" promptText="Somente para reposições"
+                                                   styleClass="text-field"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox spacing="8">
+                                    <Button text="Adicionar Aula"     onAction="#handleAdicionarAula"      styleClass="btn-accent"/>
+                                    <Button text="Salvar Edição"      onAction="#handleEditarAula"          styleClass="btn-primary"/>
+                                    <Button text="Remover Selecionada" onAction="#handleRemoverAula"        styleClass="btn-danger"/>
+                                    <Button text="Limpar Seleção"     onAction="#handleLimparSelecaoAula"   styleClass="btn-neutral"/>
+                                </HBox>
+                                <Text fx:id="errorCalendario"   styleClass="label-error"   visible="false"/>
+                                <Text fx:id="successCalendario" styleClass="label-success" visible="false"/>
+                            </VBox>
 
-                    <Text fx:id="errorCalendario" fill="RED" visible="false"/>
-                    <Text fx:id="successCalendario" fill="GREEN" visible="false"/>
-                </VBox>
-            </Tab>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
 
-        </TabPane>
+            </TabPane>
+        </VBox>
     </center>
 </BorderPane>
