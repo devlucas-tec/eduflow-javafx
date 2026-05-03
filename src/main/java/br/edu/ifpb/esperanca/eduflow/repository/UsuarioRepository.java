@@ -130,6 +130,18 @@ public class UsuarioRepository {
         return lista;
     }
 
+    public List<Usuario> listarMonitores() {
+        String sql = "SELECT * FROM usuarios WHERE role = 'MONITOR' AND ativo = TRUE ORDER BY nome";
+        List<Usuario> lista = new ArrayList<>();
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) lista.add(mapearUsuario(rs));
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar monitores: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
     public void atualizar(Usuario usuario) {
         String sql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
         try (PreparedStatement stmt = conn().prepareStatement(sql)) {

@@ -58,6 +58,10 @@ public class UsuarioService {
         return usuarioRepository.listarProfessores();
     }
 
+    public List<Usuario> listarMonitores() {
+        return usuarioRepository.listarMonitores();
+    }
+
     public void alterarStatus(Usuario usuario, boolean ativo) {
         usuarioRepository.alterarStatus(usuario.getId(), ativo);
     }
