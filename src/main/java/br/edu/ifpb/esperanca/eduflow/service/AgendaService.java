@@ -29,8 +29,9 @@ public class AgendaService {
         return agendaRepository.listarPorDisciplina(disciplinaId);
     }
 
-    public List<Agenda> listarAgendasDisponiveis() {
-        return agendaRepository.listarDisponiveis();
+    /** Lista agendas disponíveis filtrando pelas disciplinas matriculadas do aluno. */
+    public List<Agenda> listarAgendasDisponiveisPorAluno(Long alunoId) {
+        return agendaRepository.listarDisponiveisPorAluno(alunoId);
     }
 
     public List<Agenda> listarAgendasDoMonitor(Long monitorId) {

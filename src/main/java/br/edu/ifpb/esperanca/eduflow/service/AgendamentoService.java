@@ -4,6 +4,7 @@ import br.edu.ifpb.esperanca.eduflow.domain.entities.*;
 import br.edu.ifpb.esperanca.eduflow.domain.enums.StatusAgendamento;
 import br.edu.ifpb.esperanca.eduflow.repository.AgendaRepository;
 import br.edu.ifpb.esperanca.eduflow.repository.AgendamentoRepository;
+import br.edu.ifpb.esperanca.eduflow.repository.AtendimentoRepository;
 
 import java.util.List;
 
@@ -11,10 +12,12 @@ public class AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
     private final AgendaRepository agendaRepository;
+    private final AtendimentoRepository atendimentoRepository;
 
     public AgendamentoService() {
         this.agendamentoRepository = new AgendamentoRepository();
         this.agendaRepository = new AgendaRepository();
+        this.atendimentoRepository = new AtendimentoRepository();
     }
 
     public Agendamento agendarMonitoria(Aluno aluno, Agenda agenda, String assunto) {
@@ -47,8 +50,38 @@ public class AgendamentoService {
     public Atendimento registrarAtendimento(Monitor monitor, Agendamento agendamento,
                                             boolean presenca, String conteudo) {
         Atendimento at = monitor.registrarAtendimento(agendamento, presenca, conteudo);
+        // Persiste o status no agendamento
         agendamentoRepository.atualizarStatus(agendamento.getId(), agendamento.getStatus());
+        // Persiste o atendimento na tabela atendimentos
+        atendimentoRepository.salvar(at);
         return at;
+    }
+
+    /** Lista atendimentos registrados pelo monitor pendentes de validação pelo professor. */
+    public List<Atendimento> listarParaValidacaoPorProfessor(Long professorId) {
+        return atendimentoRepository.listarParaValidacaoPorProfessor(professorId);
+    }
+
+    /** Professor valida um atendimento — atualiza o status do agendamento para VALIDADO. */
+    public void validarAtendimento(Agendamento agendamento, Professor professor) {
+        Agenda agenda = agendamento.getAgenda();
+        Disciplina disciplina = agenda != null ? agenda.getDisciplina() : null;
+        if (disciplina == null)
+            throw new br.edu.ifpb.esperanca.eduflow.domain.exceptions.BusinessException(
+                    "Disciplina do agendamento não encontrada.");
+        professor.validarAtendimento(agendamento, disciplina);
+        agendamentoRepository.atualizarStatus(agendamento.getId(), agendamento.getStatus());
+    }
+
+    /**
+     * Professor rejeita um atendimento registrado pelo monitor.
+     * Devolve o status para PENDENTE e remove o registro de atendimento,
+     * permitindo que o monitor registre novamente.
+     */
+    public void rejeitarAtendimento(Agendamento agendamento) {
+        agendamento.setStatus(br.edu.ifpb.esperanca.eduflow.domain.enums.StatusAgendamento.PENDENTE);
+        agendamentoRepository.atualizarStatus(agendamento.getId(), agendamento.getStatus());
+        atendimentoRepository.deletarPorAgendamento(agendamento.getId());
     }
 
     public List<Agendamento> listarPorAgenda(Long agendaId) {

@@ -86,9 +86,12 @@ public class Monitor extends Aluno {
             throw new BusinessException(
                     "Só é possível registrar atendimento em agendamentos PENDENTE ou CONFIRMADO.");
 
-        if (conteudoTrabalhado == null || conteudoTrabalhado.isBlank())
+        // Conteúdo obrigatório apenas quando o aluno esteve presente
+        if (presenca && (conteudoTrabalhado == null || conteudoTrabalhado.isBlank()))
             throw new BusinessException(
-                    "O conteúdo trabalhado é obrigatório para registrar o atendimento. (RN06)");
+                    "O conteúdo trabalhado é obrigatório quando o aluno esteve presente. (RN06)");
+        if (!presenca && (conteudoTrabalhado == null || conteudoTrabalhado.isBlank()))
+            conteudoTrabalhado = "Aluno faltou";
 
         agendamento.setStatus(presenca ? StatusAgendamento.REALIZADO : StatusAgendamento.FALTOU);
 

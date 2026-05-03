@@ -9,15 +9,16 @@ import java.util.Optional;
 
 public class DisciplinaRepository {
 
-    private final Connection conn;
-
-    public DisciplinaRepository() {
-        this.conn = ConectionFactory.getConnection();
+    // ✅ CORREÇÃO: não armazena a conexão como campo final.
+    // Usa um método conn() que busca sempre a conexão atual do ConectionFactory,
+    // evitando falhas quando a conexão expira (comum com Neon/serverless).
+    private Connection conn() {
+        return ConectionFactory.getConnection();
     }
 
     public Disciplina salvar(Disciplina disciplina) {
         String sql = "INSERT INTO disciplinas (nome, codigo, semestre_letivo) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, disciplina.getNome());
             stmt.setString(2, disciplina.getCodigo());
             stmt.setString(3, disciplina.getSemestreLetivo());
@@ -34,7 +35,7 @@ public class DisciplinaRepository {
     public List<Disciplina> listarTodas() {
         String sql = "SELECT * FROM disciplinas ORDER BY nome";
         List<Disciplina> lista = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) lista.add(mapear(rs));
         } catch (SQLException e) {
@@ -45,7 +46,7 @@ public class DisciplinaRepository {
 
     public Optional<Disciplina> buscarPorId(Long id) {
         String sql = "SELECT * FROM disciplinas WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
             stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) return Optional.of(mapear(rs));
@@ -64,7 +65,7 @@ public class DisciplinaRepository {
             ORDER BY d.nome
             """;
         List<Disciplina> lista = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
             stmt.setLong(1, monitorId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) lista.add(mapear(rs));
@@ -83,7 +84,7 @@ public class DisciplinaRepository {
             ORDER BY d.nome
             """;
         List<Disciplina> lista = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
             stmt.setLong(1, professorId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) lista.add(mapear(rs));
@@ -95,11 +96,14 @@ public class DisciplinaRepository {
 
     public void excluir(Long id) {
         String sql = "DELETE FROM disciplinas WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
             stmt.setLong(1, id);
-            stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                throw new RuntimeException("Nenhuma disciplina encontrada com o id " + id);
+            }
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao excluir disciplina", e);
+            throw new RuntimeException("Erro ao excluir disciplina: " + e.getMessage(), e);
         }
     }
 

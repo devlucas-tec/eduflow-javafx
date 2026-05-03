@@ -97,8 +97,10 @@ public class AgendamentoRepository {
     }
 
     /**
-     * MÉTODO QUE ESTAVA VAZIO:
-     * Agora busca PENDENTE ou CONFIRMADO para o monitor poder registrar.
+     * Lista agendamentos do monitor para a aba Atendimentos.
+     * ✅ CORREÇÃO: exibe apenas PENDENTE e CONFIRMADO (registráveis).
+     * Agendamentos já REALIZADO/FALTOU não devem aparecer para evitar que
+     * o domain lance BusinessException silenciosamente ao tentar re-registrar.
      */
     public List<Agendamento> listarParaValidacaoPorMonitor(Long monitorId) {
         String sql = """
@@ -108,7 +110,8 @@ public class AgendamentoRepository {
             FROM agendamentos ag
             JOIN agendas a ON a.id = ag.agenda_id
             JOIN usuarios u ON u.id = ag.aluno_id
-            WHERE a.monitor_id = ? AND ag.status IN ('PENDENTE', 'CONFIRMADO', 'CANCELADO_ALUNO', 'CANCELADO_MONITOR')
+            WHERE a.monitor_id = ?
+              AND ag.status IN ('PENDENTE', 'CONFIRMADO')
             ORDER BY a.data_hora_inicio ASC
             """;
 
@@ -152,6 +155,21 @@ public class AgendamentoRepository {
         return lista;
     }
 
+    /**
+     * ✅ NOVO: Remove todos os agendamentos de uma agenda.
+     * Usado pela exclusão em cascata do DisciplinaService
+     * (deve ser chamado APÓS deletar os atendimentos vinculados).
+     */
+    public void excluirPorAgenda(Long agendaId) {
+        String sql = "DELETE FROM agendamentos WHERE agenda_id = ?";
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, agendaId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir agendamentos da agenda: " + e.getMessage(), e);
+        }
+    }
+
     public void cancelarAgendamento(Long id, StatusAgendamento status, String justificativa) {
         String sql = "UPDATE agendamentos SET status = ?, justificativa = ? WHERE id = ?";
         try (PreparedStatement stmt = conn().prepareStatement(sql)) {
@@ -166,8 +184,6 @@ public class AgendamentoRepository {
 
     /**
      * Mapeador para queries que usam aliases agenda_inicio / agenda_fim.
-     * Garante que dataHoraInicio da agenda seja lido corretamente
-     * sem conflito com data_hora_solicitacao do agendamento.
      */
     private Agendamento mapearComAgendaCompleta(ResultSet rs) throws SQLException {
         Agendamento ag = mapearCompleto(rs);
@@ -198,18 +214,15 @@ public class AgendamentoRepository {
 
         ag.setStatus(StatusAgendamento.valueOf(rs.getString("status")));
 
-        // Hidrata o Aluno
         Aluno aluno = new Aluno();
         aluno.setId(rs.getLong("aluno_id"));
         try {
-            // Tenta pegar o nome se o JOIN de usuários foi feito
             aluno.setNome(rs.getString("aluno_nome"));
         } catch (SQLException e) {
             aluno.setNome("Aluno");
         }
         ag.setAluno(aluno);
 
-        // Hidrata a Agenda (apenas o id — mapearComAgendaCompleta preenche as datas via aliases)
         Agenda agenda = new Agenda();
         agenda.setId(rs.getLong("agenda_id"));
         ag.setAgenda(agenda);

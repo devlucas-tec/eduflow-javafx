@@ -66,6 +66,20 @@ public class AlunoDisciplinaRepository {
         }
     }
 
+    /**
+     * ✅ NOVO: Remove todas as matrículas de uma disciplina.
+     * Usado pela exclusão em cascata do DisciplinaService.
+     */
+    public void excluirPorDisciplina(Long disciplinaId) {
+        String sql = "DELETE FROM aluno_disciplina WHERE disciplina_id = ?";
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, disciplinaId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir matrículas da disciplina: " + e.getMessage(), e);
+        }
+    }
+
     private List<Disciplina> listar(String sql, Long alunoId) {
         List<Disciplina> lista = new ArrayList<>();
         try (PreparedStatement stmt = conn().prepareStatement(sql)) {

@@ -142,7 +142,8 @@ public class AlunoDashBoardController {
     }
 
     private void carregarAgendas() {
-        tabelaAgendas.setItems(FXCollections.observableArrayList(agendaService.listarAgendasDisponiveis()));
+        tabelaAgendas.setItems(FXCollections.observableArrayList(
+                agendaService.listarAgendasDisponiveisPorAluno(alunoLogado.getId())));
     }
 
     private void carregarMeusAgendamentos() {

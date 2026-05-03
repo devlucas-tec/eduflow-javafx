@@ -83,18 +83,25 @@
             <!-- ABA 3: Validação de Atendimentos -->
             <Tab text="Validação de Atendimentos">
                 <VBox spacing="10" style="-fx-padding: 15;">
-                    <Label text="Atendimentos para Aprovar (RN02/RN09)"
+                    <Label text="Atendimentos Registrados pelo Monitor (RN02/RN09)"
                            style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
-                    <TableView fx:id="tabelaParaValidar" prefHeight="350" VBox.vgrow="ALWAYS">
+                    <TableView fx:id="tabelaParaValidar" prefHeight="320" VBox.vgrow="ALWAYS">
                         <columns>
-                            <TableColumn fx:id="colAluno" text="Aluno" prefWidth="160"/>
-                            <TableColumn fx:id="colAssunto" text="Assunto" prefWidth="220"/>
-                            <TableColumn fx:id="colStatus" text="Status" prefWidth="130"/>
-                            <TableColumn fx:id="colJustificativa" text="Justificativa do Cancelamento" prefWidth="240"/>
+                            <TableColumn fx:id="colAluno" text="Aluno" prefWidth="140"/>
+                            <TableColumn fx:id="colAssunto" text="Assunto" prefWidth="180"/>
+                            <TableColumn fx:id="colPresenca" text="Presença" prefWidth="100"/>
+                            <TableColumn fx:id="colConteudo" text="Conteúdo Trabalhado" prefWidth="200"/>
+                            <TableColumn fx:id="colDataRegistro" text="Registrado em" prefWidth="130"/>
+                            <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+                            <TableColumn fx:id="colJustificativa" text="Justificativa" prefWidth="180"/>
                         </columns>
                     </TableView>
-                    <Button text="Validar Atendimento Selecionado" onAction="#handleValidar"
-                            style="-fx-background-color: #6C3483; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                    <HBox spacing="10">
+                        <Button text="✅ Validar Atendimento" onAction="#handleValidar"
+                                style="-fx-background-color: #6C3483; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                        <Button text="❌ Rejeitar Atendimento" onAction="#handleRejeitar"
+                                style="-fx-background-color: #C0392B; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
+                    </HBox>
                     <Text fx:id="errorMessage" fill="RED" visible="false"/>
                     <Text fx:id="successMessage" fill="GREEN" visible="false"/>
                 </VBox>

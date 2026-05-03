@@ -13,7 +13,6 @@ public class MonitorDisciplinaRepository {
 
     /** Vincula monitor a uma disciplina. Remove o vínculo anterior antes (1 disciplina por vez). */
     public void vincular(Long monitorId, Long disciplinaId) {
-        // Remove vínculo anterior se existir
         String del = "DELETE FROM monitor_disciplina WHERE monitor_id = ?";
         try (PreparedStatement stmt = conn().prepareStatement(del)) {
             stmt.setLong(1, monitorId);
@@ -72,6 +71,20 @@ public class MonitorDisciplinaRepository {
             return stmt.executeQuery().next();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao verificar vínculo: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ✅ NOVO: Remove todos os vínculos monitor ↔ disciplina de uma disciplina.
+     * Usado pela exclusão em cascata do DisciplinaService.
+     */
+    public void excluirPorDisciplina(Long disciplinaId) {
+        String sql = "DELETE FROM monitor_disciplina WHERE disciplina_id = ?";
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, disciplinaId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir vínculos de monitor da disciplina: " + e.getMessage(), e);
         }
     }
 }
