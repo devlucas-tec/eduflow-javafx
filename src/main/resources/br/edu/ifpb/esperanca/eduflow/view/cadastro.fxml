@@ -1,26 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="br.edu.ifpb.esperanca.eduflow.controller.CadastroController"
-      style="-fx-background-color: #F0F4F8;">
-    <padding><Insets bottom="30" left="40" right="40" top="30"/></padding>
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="br.edu.ifpb.esperanca.eduflow.controller.CadastroController"
+           styleClass="login-root"
+           stylesheets="@./styles/eduflow.css">
 
-    <Label text="Cadastro - EduFlow" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2A4D69;"/>
+    <VBox alignment="CENTER">
+        <VBox styleClass="cadastro-card" spacing="11">
 
-    <TextField fx:id="txtNome" promptText="Nome completo" maxWidth="300"/>
-    <TextField fx:id="txtEmail" promptText="E-mail institucional" maxWidth="300"/>
-    <TextField fx:id="txtMatricula" promptText="Matrícula" maxWidth="300"/>
-    <PasswordField fx:id="txtSenha" promptText="Senha (mín. 6 caracteres)" maxWidth="300"/>
-    <PasswordField fx:id="txtConfirmaSenha" promptText="Confirmar senha" maxWidth="300"/>
+            <VBox spacing="2">
+                <Label text="Cadastro" styleClass="cadastro-title"/>
+                <Label text="EduFlow — IFPB Esperança" styleClass="login-tagline"/>
+            </VBox>
 
-    <Button text="Cadastrar" onAction="#handleCadastrar"
-            style="-fx-background-color: #2A4D69; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5;"/>
-    <Hyperlink text="Voltar para Login" onAction="#handleVoltarLogin"/>
+            <Region styleClass="login-divider" maxWidth="Infinity"/>
 
-    <Text fx:id="errorMessage" fill="RED" visible="false"/>
-    <Text fx:id="successMessage" fill="GREEN" visible="false"/>
-</VBox>
+            <VBox spacing="5">
+                <Label text="Nome completo" styleClass="field-label"/>
+                <TextField fx:id="txtNome" promptText="Nome completo"
+                           maxWidth="Infinity" styleClass="text-field"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="E-mail institucional" styleClass="field-label"/>
+                <TextField fx:id="txtEmail" promptText="E-mail institucional"
+                           maxWidth="Infinity" styleClass="text-field"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Matrícula" styleClass="field-label"/>
+                <TextField fx:id="txtMatricula" promptText="Matrícula"
+                           maxWidth="Infinity" styleClass="text-field"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Senha" styleClass="field-label"/>
+                <PasswordField fx:id="txtSenha" promptText="Senha (mín. 6 caracteres)"
+                               maxWidth="Infinity" styleClass="password-field"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Confirmar senha" styleClass="field-label"/>
+                <PasswordField fx:id="txtConfirmaSenha" promptText="Confirmar senha"
+                               maxWidth="Infinity" styleClass="password-field"/>
+            </VBox>
+
+            <Text fx:id="errorMessage"   styleClass="label-error"   visible="false"/>
+            <Text fx:id="successMessage" styleClass="label-success" visible="false"/>
+
+            <Button text="Cadastrar" onAction="#handleCadastrar"
+                    styleClass="btn-primary" maxWidth="Infinity">
+                <VBox.margin><Insets top="4"/></VBox.margin>
+            </Button>
+
+            <HBox alignment="CENTER">
+                <Hyperlink text="Voltar para Login"
+                           onAction="#handleVoltarLogin"
+                           styleClass="hyperlink"/>
+            </HBox>
+
+        </VBox>
+    </VBox>
+</StackPane>

@@ -28,7 +28,6 @@ public class ConectionFactory {
      * Ignora linhas em branco e comentários (#).
      */
     private static void carregarEnv() {
-        // Tenta ler o .env do classpath (coloque o .env em src/main/resources)
         try (InputStream is = ConectionFactory.class.getClassLoader().getResourceAsStream(".env")) {
             if (is != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -40,7 +39,6 @@ public class ConectionFactory {
                     if (idx > 0) {
                         String chave = linha.substring(0, idx).trim();
                         String valor = linha.substring(idx + 1).trim();
-                        // Remove aspas se houver
                         if (valor.startsWith("\"") && valor.endsWith("\"")) {
                             valor = valor.substring(1, valor.length() - 1);
                         }
@@ -63,7 +61,7 @@ public class ConectionFactory {
     private static String getVar(String chave) {
         String valor = envVars.get(chave);
         if (valor != null && !valor.isEmpty()) return valor;
-        return System.getenv(chave); // fallback para EnvFile / CI
+        return System.getenv(chave);
     }
 
     /**
@@ -101,6 +99,9 @@ public class ConectionFactory {
 
         try {
             Connection conn = DriverManager.getConnection(url, user, password);
+            // ✅ CORREÇÃO: garante que cada operação seja commitada imediatamente,
+            // evitando INSERTs que executam mas nunca são persistidos no banco.
+            conn.setAutoCommit(true);
             System.out.println("[ConectionFactory] Conexão estabelecida com sucesso.");
             return conn;
         } catch (SQLException e) {

@@ -25,8 +25,13 @@ public class AgendaService {
         return agendaRepository.salvar(validada);
     }
 
-    public List<Agenda> listarAgendasDisponiveis() {
-        return agendaRepository.listarDisponiveis();
+    public List<Agenda> listarPorDisciplina(Long disciplinaId) {
+        return agendaRepository.listarPorDisciplina(disciplinaId);
+    }
+
+    /** Lista agendas disponíveis filtrando pelas disciplinas matriculadas do aluno. */
+    public List<Agenda> listarAgendasDisponiveisPorAluno(Long alunoId) {
+        return agendaRepository.listarDisponiveisPorAluno(alunoId);
     }
 
     public List<Agenda> listarAgendasDoMonitor(Long monitorId) {
@@ -35,5 +40,13 @@ public class AgendaService {
 
     public Optional<Agenda> buscarPorId(Long id) {
         return agendaRepository.buscarPorId(id);
+    }
+
+    /**
+     * Cancela a sessão de monitoria: marca a agenda como cancelada
+     * e persiste a justificativa na tabela agendas.
+     */
+    public void cancelarSessao(Long agendaId, String justificativa) {
+        agendaRepository.cancelarSessao(agendaId, justificativa);
     }
 }

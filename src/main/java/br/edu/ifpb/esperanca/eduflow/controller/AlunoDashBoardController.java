@@ -43,6 +43,7 @@ public class AlunoDashBoardController {
     @FXML private TableColumn<Agendamento, String> colMeuStatus;
     @FXML private TableColumn<Agendamento, String> colMeuAssunto;
     @FXML private TableColumn<Agendamento, String> colMeuHorario;
+    @FXML private TableColumn<Agendamento, String> colMeuJustificativa;
 
     private final AgendaService agendaService = new AgendaService();
     private final AgendamentoService agendamentoService = new AgendamentoService();
@@ -53,6 +54,11 @@ public class AlunoDashBoardController {
     public void initialize() {
         alunoLogado = (Aluno) SessionManager.getInstance().getUsuarioLogado();
         lblBemVindo.setText("Olá, " + alunoLogado.getNome() + "!");
+
+        tabelaMatriculadas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaDisponiveis.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaAgendas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelaMeusAgendamentos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         configurarTabelaDisciplinas();
         carregarDisciplinas();
@@ -134,10 +140,15 @@ public class AlunoDashBoardController {
             Agenda ag = cell.getValue().getAgenda();
             return new SimpleStringProperty(ag != null ? ag.getDataHoraInicio().toString() : "—");
         });
+        if (colMeuJustificativa != null)
+            colMeuJustificativa.setCellValueFactory(cell ->
+                    new SimpleStringProperty(cell.getValue().getJustificativa() != null
+                            ? cell.getValue().getJustificativa() : ""));
     }
 
     private void carregarAgendas() {
-        tabelaAgendas.setItems(FXCollections.observableArrayList(agendaService.listarAgendasDisponiveis()));
+        tabelaAgendas.setItems(FXCollections.observableArrayList(
+                agendaService.listarAgendasDisponiveisPorAluno(alunoLogado.getId())));
     }
 
     private void carregarMeusAgendamentos() {
@@ -169,7 +180,7 @@ public class AlunoDashBoardController {
         Agendamento selecionado = tabelaMeusAgendamentos.getSelectionModel().getSelectedItem();
         if (selecionado == null) { showError("Selecione um agendamento para cancelar."); return; }
         try {
-            agendamentoService.cancelarPeloAluno(selecionado, alunoLogado, "Cancelado pelo aluno.");
+            agendamentoService.cancelarPeloAluno(selecionado, alunoLogado);
             showSuccess("Agendamento cancelado.");
             carregarMeusAgendamentos();
             carregarAgendas();

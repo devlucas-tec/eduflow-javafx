@@ -102,4 +102,5 @@ public class Aluno extends Usuario {
     public void setFaltasAcumuladas(int v) { this.faltasAcumuladas = v; }
     public LocalDate getBloqueadoAte() { return bloqueadoAte; }
     public void setBloqueadoAte(LocalDate v) { this.bloqueadoAte = v; }
+
 }

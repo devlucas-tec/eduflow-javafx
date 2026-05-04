@@ -56,6 +56,29 @@ public class ProfessorDisciplinaRepository {
         return lista;
     }
 
+    /** Lista professores vinculados a uma disciplina (para notificação). */
+    public List<br.edu.ifpb.esperanca.eduflow.domain.entities.Usuario> listarProfessoresPorDisciplina(Long disciplinaId) {
+        String sql = """
+            SELECT u.id, u.nome FROM usuarios u
+            JOIN professor_disciplina pd ON pd.professor_id = u.id
+            WHERE pd.disciplina_id = ?
+            """;
+        List<br.edu.ifpb.esperanca.eduflow.domain.entities.Usuario> lista = new java.util.ArrayList<>();
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, disciplinaId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                br.edu.ifpb.esperanca.eduflow.domain.entities.Professor p =
+                        new br.edu.ifpb.esperanca.eduflow.domain.entities.Professor(
+                                rs.getLong("id"), rs.getString("nome"), "", "", "");
+                lista.add(p);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar professor da disciplina: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
     public boolean estaVinculado(Long professorId, Long disciplinaId) {
         String sql = "SELECT 1 FROM professor_disciplina WHERE professor_id = ? AND disciplina_id = ?";
         try (PreparedStatement stmt = conn().prepareStatement(sql)) {
@@ -64,6 +87,20 @@ public class ProfessorDisciplinaRepository {
             return stmt.executeQuery().next();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao verificar vínculo: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ✅ NOVO: Remove todos os vínculos professor ↔ disciplina de uma disciplina.
+     * Usado pela exclusão em cascata do DisciplinaService.
+     */
+    public void excluirPorDisciplina(Long disciplinaId) {
+        String sql = "DELETE FROM professor_disciplina WHERE disciplina_id = ?";
+        try (PreparedStatement stmt = conn().prepareStatement(sql)) {
+            stmt.setLong(1, disciplinaId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir vínculos de professor da disciplina: " + e.getMessage(), e);
         }
     }
 }

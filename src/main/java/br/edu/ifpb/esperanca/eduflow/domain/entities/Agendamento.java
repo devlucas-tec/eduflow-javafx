@@ -7,7 +7,14 @@ import java.time.LocalDateTime;
 
 /**
  * Representa a reserva de um aluno em uma Agenda de monitoria.
- * RN05: cancelamento apenas com >= 2h de antecedência.
+ *
+ * RN05 — Cancelamento pelo MONITOR:
+ *   - Só pode cancelar com >= 2h de antecedência.
+ *   - Justificativa obrigatória.
+ *
+ * Cancelamento pelo ALUNO:
+ *   - Sem restrição de horário.
+ *   - Sem justificativa obrigatória.
  */
 public class Agendamento {
 
@@ -17,45 +24,44 @@ public class Agendamento {
     private StatusAgendamento status;
     private Aluno aluno;
     private Agenda agenda;
+    private String justificativa;
 
     public Agendamento() {}
 
-    // ── RN05: Prazo de cancelamento ────────────────────────────────────────────
+    // ── Verificação de status já encerrado ────────────────────────────────────
 
-    /**
-     * Retorna true se o agendamento ainda pode ser cancelado (>= 2h de antecedência).
-     */
-    public boolean podeCancelar() {
-        if (status == StatusAgendamento.CANCELADO_ALUNO
+    private boolean jaEncerrado() {
+        return status == StatusAgendamento.CANCELADO_ALUNO
                 || status == StatusAgendamento.CANCELADO_MONITOR
                 || status == StatusAgendamento.REALIZADO
-                || status == StatusAgendamento.VALIDADO) {
-            return false;
-        }
-        LocalDateTime limiteParaCancelar = agenda.getDataHoraInicio().minusHours(2);
-        return LocalDateTime.now().isBefore(limiteParaCancelar);
+                || status == StatusAgendamento.VALIDADO;
     }
 
-    /**
-     * Cancela este agendamento pelo aluno (RN05).
-     */
-    public void cancelarPeloAluno(String justificativa) {
-        if (!podeCancelar())
-            throw new BusinessException(
-                    "O cancelamento só pode ser feito com no mínimo 2 horas de antecedência. (RN05)");
+    // ── Cancelamento pelo ALUNO (sem restrições) ──────────────────────────────
+
+    public void cancelarPeloAluno() {
+        if (jaEncerrado())
+            throw new BusinessException("Este agendamento já está encerrado.");
         this.status = StatusAgendamento.CANCELADO_ALUNO;
-        agenda.liberarVaga();
+        if (agenda != null) agenda.liberarVaga();
     }
 
-    /**
-     * Cancela este agendamento pelo monitor (RN05).
-     */
+    // ── RN05: Cancelamento pelo MONITOR (>= 2h de antecedência + justificativa) ──
+
+    public boolean podeCancelarComoMonitor() {
+        if (jaEncerrado()) return false;
+        if (agenda == null || agenda.getDataHoraInicio() == null) return false;
+        return LocalDateTime.now().isBefore(agenda.getDataHoraInicio().minusHours(2));
+    }
+
     public void cancelarPeloMonitor(String justificativa) {
-        if (!podeCancelar())
-            throw new BusinessException(
-                    "O cancelamento só pode ser feito com no mínimo 2 horas de antecedência. (RN05)");
+        if (justificativa == null || justificativa.isBlank())
+            throw new BusinessException("A justificativa é obrigatória para cancelamento pelo monitor. (RN05)");
+        if (!podeCancelarComoMonitor())
+            throw new BusinessException("O cancelamento pelo monitor só pode ser feito com no mínimo 2 horas de antecedência. (RN05)");
+        this.justificativa = justificativa;
         this.status = StatusAgendamento.CANCELADO_MONITOR;
-        agenda.liberarVaga();
+        if (agenda != null) agenda.liberarVaga();
     }
 
     // Getters / Setters
@@ -71,4 +77,6 @@ public class Agendamento {
     public void setAluno(Aluno aluno) { this.aluno = aluno; }
     public Agenda getAgenda() { return agenda; }
     public void setAgenda(Agenda agenda) { this.agenda = agenda; }
+    public String getJustificativa() { return justificativa; }
+    public void setJustificativa(String justificativa) { this.justificativa = justificativa; }
 }
