@@ -20,20 +20,22 @@
 
 ## 📋 Índice
 
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades](#-funcionalidades)
-- [Arquitetura](#-arquitetura)
-- [Regras de Negócio](#-regras-de-negócio)
-- [Pré-requisitos](#-pré-requisitos)
-- [Configuração do Banco de Dados](#-configuração-do-banco-de-dados)
-- [Instalação e Execução](#-instalação-e-execução)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Diagramas UML](#-diagramas-uml)
-- [Papéis de Usuário](#-papéis-de-usuário)
-- [Tecnologias e Padrões](#-tecnologias-e-padrões)
-- [Equipe](#-equipe)
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Arquitetura](#arquitetura)
+- [Regras de Negócio](#regras-de-negocio)
+- [Pré-requisitos](#pre-requisitos)
+- [Configuração do Banco de Dados](#configuracao-do-banco-de-dados)
+- [Instalação e Execução](#instalacao-e-execucao)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Diagramas UML](#diagramas-uml)
+- [Papéis de Usuário](#papeis-de-usuario)
+- [Tecnologias e Padrões](#tecnologias-e-padroes)
+- [Equipe](#equipe)
 
 ---
+
+<a id="sobre-o-projeto"></a>
 
 ## 🎯 Sobre o Projeto
 
@@ -44,6 +46,8 @@ O **EduFlow** é uma aplicação desktop multiplataforma (Windows, Linux, macOS)
 **A solução:** um sistema estruturado com controle de acesso por perfil, fluxo de agendamento com validação em tempo real, registro de atendimentos e dashboards analíticos.
 
 ---
+
+<a id="funcionalidades"></a>
 
 ## ✅ Funcionalidades
 
@@ -75,6 +79,8 @@ O **EduFlow** é uma aplicação desktop multiplataforma (Windows, Linux, macOS)
 
 ---
 
+<a id="arquitetura"></a>
+
 ## 🏗️ Arquitetura
 
 O EduFlow segue uma **Arquitetura em Camadas** com separação clara de responsabilidades:
@@ -103,6 +109,8 @@ O EduFlow segue uma **Arquitetura em Camadas** com separação clara de responsa
 - **JavaFX Properties** — binding de dados na interface
 
 ---
+
+<a id="regras-de-negocio"></a>
 
 ## 📏 Regras de Negócio
 
