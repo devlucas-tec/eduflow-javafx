@@ -704,7 +704,7 @@ Desenvolvido pela **Equipe APS 2026.1** — IFPB Campus Esperança
 | Mateus Miranda da Silva | miranda2k4@gmail.com |
 
 **Disciplina:** Análise e Projeto de Sistemas  
-**Curso:** Tecnologia em Análise e Desenvolvimento de Sistemas (ADS)  
+**Curso:** Análise e Desenvolvimento de Sistemas (ADS)  
 **Instituição:** IFPB — Instituto Federal da Paraíba, Campus Esperança  
 **Semestre:** 2026.1
 
