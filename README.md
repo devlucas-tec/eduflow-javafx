@@ -8,7 +8,6 @@
 [![JavaFX](https://img.shields.io/badge/JavaFX-17.0.2-blue?style=for-the-badge)](https://openjfx.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-42.7.3-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Maven](https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 <br/>
 
@@ -26,7 +25,7 @@
 - [Arquitetura](#-arquitetura)
 - [Regras de Negócio](#-regras-de-negócio)
 - [Pré-requisitos](#-pré-requisitos)
-- [Configuração do Banco de Dados](#-configuração-do-banco-de-dados)
+- [Configuração do Banco de Dados](#-configuracao-do-banco-de-dados)
 - [Instalação e Execução](#-instalação-e-execução)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Diagramas UML](#-diagramas-uml)
@@ -692,25 +691,15 @@ Desenvolvido pela **Equipe APS 2026.1** — IFPB Campus Esperança
 
 | Nome | Contato |
 |------|---------|
-| Lucas Barbosa Graciano | barbosa.graciano@academico.edu.br |
-| Valdenio Pantaleao dos Santos | — |
-| Mateus Miranda da Silva | — |
+| Lucas Barbosa Graciano | barbosagraciano07@gmail.com |
+| Valdenio Pantaleao dos Santos | deniopds7@gmail.com |
+| Mateus Miranda da Silva | miranda2k4@gmail.com |
 
 **Disciplina:** Análise e Projeto de Sistemas  
 **Curso:** Tecnologia em Análise e Desenvolvimento de Sistemas (ADS)  
 **Instituição:** IFPB — Instituto Federal da Paraíba, Campus Esperança  
 **Semestre:** 2026.1
 
----
-
-## 📄 Licença
-
-Este projeto é distribuído sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-```
-MIT License — sinta-se livre para usar, modificar e distribuir.
-Créditos ao projeto original são sempre bem-vindos. 🎓
-```
 
 ---
 
