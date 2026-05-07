@@ -25,7 +25,7 @@
 - [Arquitetura](#-arquitetura)
 - [Regras de Negócio](#-regras-de-negócio)
 - [Pré-requisitos](#-pré-requisitos)
-- [Configuração do Banco de Dados](#-configuracao-do-banco-de-dados)
+- [Configuração do Banco de Dados](#-configuração-do-banco-de-dados)
 - [Instalação e Execução](#-instalação-e-execução)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Diagramas UML](#-diagramas-uml)
